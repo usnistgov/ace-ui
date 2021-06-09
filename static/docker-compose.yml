@@ -1,0 +1,151 @@
+# This compose file uses two containers built from the NIST-ACE repository. Run the following commands prior
+# to starting the docker compose deployment.
+#
+# docker build -t datamachines/nist-ace .
+#
+# cd lang/python/examples/analytics/opencv_object_detector && docker build -t ocv-ssd .
+
+
+version: "2"
+services:
+  # ACE SERVICES
+  ace:
+    image: datamachines/nist-ace:demo
+    restart: always
+    command:
+      - "tail" 
+      - "-f" 
+      - "/dev/null"
+
+
+  api-server:  
+   image: datamachines/ace-ui:demo
+   restart: always
+   volumes:
+    #  - "./run.py:/ace-ui/run.py"  # Uncomment to test demo changes
+     - "./docker-compose.yml:/ace-ui/static/docker-compose.yml"
+     - "./static/settings.yml:/ace-ui/static/settings.yml"
+   ports: 
+     - "5000:5000"
+    
+  opencv-object-detector:
+    image: ocv-ssd:demo
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+
+  opencv-object-detector_2:
+    image: ocv-ssd:demo
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+
+  ssd-mobilenet-object-detector:
+    image: ocv-ssd:demo
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+
+  ssd-mobilenet-object-detector_2:
+    image: ocv-ssd:demo
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+
+
+  # yolo-object-detector:
+  #   image: yolo5:test 
+  #   restart: always
+  #   labels:
+  #     type: analytics
+  #   command:    
+  #     - "--verbose"
+  #     - "--cuda"
+
+  act_detector:
+    image: act-recognition:demo
+    labels:
+      type: analytics
+    restart: always
+    ports:
+      - "3333:3000"
+
+  nats_server:
+    image: nats:2.1.9
+    restart: always
+    ports: 
+      - "4222:4222"
+
+
+# DATABASE AND GRAFANA VISUALIZATION SERVICES
+  influxdb:
+    image: influxdb:1.7
+    restart: always
+    ports:
+        - "8086:8086"
+    volumes:
+        - influxdb-storage:/var/lib/influxdb
+    environment:
+        INFLUXDB_DB: ace
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+        - "8088:3000"
+    depends_on:
+        - influxdb
+    volumes:
+        - grafana-storage:/var/lib/grafana
+  
+
+# Additional Video Streams
+  school_cafeteria_stream:
+    image: video_server:local
+    restart: always
+    labels:
+      type: video
+    volumes:
+      - /home/nick/mevadata/2018-03-07/10:/video
+    command:
+      - "python"
+      - "video_server.py"
+      - "/video/2018-03-07.10-40-01.10-45-01.school.G421.avi"
+  
+  school_gym_stream:
+    image: video_server:local
+    restart: always
+    labels:
+      type: video
+    volumes:
+      - /home/nick/mevadata/2018-03-07/10:/video
+    command:
+      - "python"
+      - "video_server.py"
+      - "/video/2018-03-07.10-45-00.10-50-00.school.G299.avi"
+
+  school_parkinglot_stream:
+    image: video_server:local
+    restart: always
+    labels:
+      type: video
+    volumes:
+      - /home/nick/mevadata/2018-03-07/10:/video
+    command:
+      - "python"
+      - "video_server.py"
+      - "/video/2018-03-07.10-40-01.10-45-01.school.G328.avi"
+
+
+volumes:
+  grafana-storage:
+    external: true
+  influxdb-storage:
+    external: true

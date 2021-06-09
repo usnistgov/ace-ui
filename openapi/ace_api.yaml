@@ -1,0 +1,269 @@
+openapi: "3.0.0"
+
+info:
+  version: "1.0.0"
+  title: "analytics Store"
+servers:
+  - url: /api/v1
+    description: Production server (uses live data)
+
+paths:
+  /batch_config:
+
+    post:
+      tags:
+        - analytics
+        - configure
+      operationId: run.analytics_configure_batch
+      summary: Create or update an analytics
+      responses:
+        '200':
+          description: analytics updated
+        '201':
+          description: New analytics created
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: analytics_list
+              $ref: '#/components/schemas/analytics_list'
+  /config:
+    post:
+      tags:
+        - analytics
+        - configure
+      operationId: run.analytics_configure
+      summary: Create or update an analytics
+      responses:
+        '200':
+          description: analytics updated
+        '201':
+          description: New analytics created
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: analytics
+              $ref: '#/components/schemas/analytics'
+
+
+  /config/stream/{stream_id}:
+    parameters:
+      - name: stream_id
+        in: path
+        description: ID of the stream
+        required: true
+        schema:
+          type: string
+        example: "c1a3f4f1-a902-37cd-b24d-32ce77f874e6"
+    get:
+      tags:
+        - configure
+      operationId: run.get_configuration_by_stream_id
+      summary: Get configuration information about a media stream
+      responses:
+        '200':
+          description: analytics updated
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Error
+
+  /kill:
+    post:
+      tags:
+        - analytics
+        - configure
+      operationId: run.analytics_kill
+      summary: Kill a single analytics
+      responses:
+        '200':
+          description: analytics updated
+        '201':
+          description: analytics updated
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: analytics
+              $ref: '#/components/schemas/analytics'
+#
+  /notification_configuration:
+    post:
+      tags:
+        - notification
+      operationId: run.notification_configuration
+      summary: add or update notification for a stream
+      responses:
+        '200':
+          description: notification added
+        '201':
+          description: notification updated
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: notification
+    get:
+      tags:
+        - notification
+      operationId: run.get_notification_configuration
+      summary: get alert for a stream
+      responses:
+        '200':
+          description: notification found
+          content:
+            application/json:
+              schema:
+                x-body-name: notification
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: notification
+
+  /notification_configuration/{config_id}:
+    parameters:
+      - name: config_id
+        in: path
+        description: ID of a configuration
+        required: true
+        schema:
+          type: string
+        example: "c1a3f4f1-a902-37cd-b24d-32ce77f874e6"
+    get:
+      tags:
+        - notification
+      operationId: run.get_notification_configuration_by_id
+      summary: get notiifcation configuration by using a configuration ID
+      responses:
+        '200':
+          description: notification configuration found
+          content:
+            application/json:
+              schema:
+                x-body-name: alert
+        '204':
+          description: notification configuration not found
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: alert
+
+
+  /kill_batch:
+    post:
+      tags:
+        - analytics
+        - configure
+      operationId: run.analytics_kill_batch
+      summary: kill a list of analytics
+      responses:
+        '200':
+          description: analytics updated
+        '201':
+          description: New analytics created
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: analytics_list
+              $ref: '#/components/schemas/analytics_list'
+
+  /analytics:
+    get:
+      tags:
+        - analytics
+        - status
+      operationId: run.get_analytics_list
+      summary: Get a list of running analytics
+      responses:
+        200:
+          description: Return analytics information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/analytics_list'
+
+  /settings:
+    get:
+      tags:
+        - analytics
+        - status
+      operationId: run.get_settings
+      summary: Get a list of running analytics
+      responses:
+        200:
+          description: Return analytics information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/analytics_list'
+
+components:
+  parameters:
+    uuid:
+      name: uuid
+      in: path
+      description: Unique identifier
+      required: true
+      schema:
+        type: string
+        example: "80782980-3905-11eb-adc1-0242ac120002"
+  schemas:
+    analytics_list:
+      type: array
+      items:
+        $ref: "#/components/schemas/analytics"
+    analytics:
+      type: object
+      properties:
+        stream_source:
+          type: string
+          description: Address of the stream for the analytic to process
+          example: "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+        stream_label:
+          type: string
+          description: Name of the stream
+          example: "My awesome video stream"
+        messenger_addr:
+          type: string
+          description: Address of the streaming messenger to which the analytic will send output metadata.
+          example: "nats_server:4222"
+        db_addr:
+          type: string
+          description: Address of the database to which the analytic will write output.
+          example: "influxdb:8088"
+        analytic_host:
+          type: string
+          description: Address of the analytic to connect to.
+          example: "object_detector"
+        analytic_tags:
+          type: string
+          description: Analytics tag key value pair seperated by comma
+          example: "car=tesla,planet=earth"
+        analytic_status:
+          type: string
+          description: Status of a running analytic
+          example: "running"
+        analytic_created:
+          type: string
+          format: date-time
+          description: time and date of a running analytics

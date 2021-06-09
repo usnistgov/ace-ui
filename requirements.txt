@@ -1,0 +1,9 @@
+connexion[swagger-ui]
+connexion>=2.2.0
+werkzeug==0.16.1
+PyYAML==5.3.1
+Flask-Cors==1.10.3
+Flask-SocketIO==5.0.1
+Flask==1.1.2
+Flask-SocketIO==5.0.1
+eventlet
