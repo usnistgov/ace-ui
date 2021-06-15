@@ -1,4 +1,4 @@
-FROM datamachines/nist-ace:local
+FROM datamachines/nist-ace:demo
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
 RUN apt-get update && apt-get install -y nodejs netbase
 WORKDIR /ace-ui

@@ -7,7 +7,7 @@ import {green, red} from "@material-ui/core/colors";
 import {Button} from '@material-ui/core';
 
 import Box from '@material-ui/core/Box';
-import ClientComponent from "../components/analytics/socket";
+import ClientComponent from "../components/analytics/Socket";
 import {CheckCircle, Delete} from "@material-ui/icons";
 
 import Tooltip from '@material-ui/core/Tooltip';
