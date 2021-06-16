@@ -118,7 +118,7 @@ paths:
       tags:
         - notification
       operationId: run.get_notification_configuration
-      summary: get alert for a stream
+      summary: get notification configuration for all running streams
       responses:
         '200':
           description: notification found
@@ -208,7 +208,7 @@ paths:
         - analytics
         - status
       operationId: run.get_settings
-      summary: Get a list of running analytics
+      summary: Get status and configuration of ACE system
       responses:
         200:
           description: Return analytics information
