@@ -17,7 +17,6 @@ services:
       - "-f" 
       - "/dev/null"
 
-
   api-server:  
    image: datamachines/ace-ui:demo
    restart: always
@@ -36,14 +35,6 @@ services:
     command:    
       - "--verbose"
 
-  opencv-object-detector_2:
-    image: ocv-ssd:demo
-    restart: always
-    labels:
-      type: analytics
-    command:    
-      - "--verbose"
-
   ssd-mobilenet-object-detector:
     image: ocv-ssd:demo
     restart: always
@@ -51,24 +42,6 @@ services:
       type: analytics
     command:    
       - "--verbose"
-
-  ssd-mobilenet-object-detector_2:
-    image: ocv-ssd:demo
-    restart: always
-    labels:
-      type: analytics
-    command:    
-      - "--verbose"
-
-
-  # yolo-object-detector:
-  #   image: yolo5:test 
-  #   restart: always
-  #   labels:
-  #     type: analytics
-  #   command:    
-  #     - "--verbose"
-  #     - "--cuda"
 
   act_detector:
     image: act-recognition:demo
@@ -107,42 +80,27 @@ services:
   
 
 # Additional Video Streams
-  school_cafeteria_stream:
-    image: video_server:local
+  video_file_1:
+    image: video_server:demo
     restart: always
     labels:
       type: video
     volumes:
-      - /home/nick/mevadata/2018-03-07/10:/video
+      - $PWD:/videos
     command:
-      - "python"
-      - "video_server.py"
-      - "/video/2018-03-07.10-40-01.10-45-01.school.G421.avi"
-  
-  school_gym_stream:
-    image: video_server:local
-    restart: always
-    labels:
-      type: video
-    volumes:
-      - /home/nick/mevadata/2018-03-07/10:/video
-    command:
-      - "python"
-      - "video_server.py"
-      - "/video/2018-03-07.10-45-00.10-50-00.school.G299.avi"
+      - "-v"
+      - "/videos/{video filename}"      # Put your video file name here
 
-  school_parkinglot_stream:
-    image: video_server:local
+  video_file_2:
+    image: video_server:demo
     restart: always
     labels:
       type: video
     volumes:
-      - /home/nick/mevadata/2018-03-07/10:/video
+      - $PWD:/videos
     command:
-      - "python"
-      - "video_server.py"
-      - "/video/2018-03-07.10-40-01.10-45-01.school.G328.avi"
-
+      - "-v"
+      - "/videos/{video filename}"      # Put your video file name here
 
 volumes:
   grafana-storage:

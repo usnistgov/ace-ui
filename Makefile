@@ -25,6 +25,7 @@ pip-install: ## install requirements.txt
 # Build the container
 docker-build: ## Build the container
 	docker build -t $(APP_NAME) .
+	docker build -t video_server:demo -f contrib/video_server/Dockerfile contrib/video_server
 
 docker-build-nc: ## Build the container without any cache
 	docker build --no-cache -t $(APP_NAME) .

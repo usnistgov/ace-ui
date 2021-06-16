@@ -81,27 +81,25 @@ services:
 
 # Additional Video Streams
   video_file_1:
-    image: video_server:local
+    image: video_server:demo
     restart: always
     labels:
       type: video
     volumes:
       - $PWD:/videos
     command:
-      - "python"
-      - "video_server.py"
+      - "-v"
       - "/videos/{video filename}"      # Put your video file name here
 
   video_file_2:
-    image: video_server:local
+    image: video_server:demo
     restart: always
     labels:
       type: video
     volumes:
       - $PWD:/videos
     command:
-      - "python"
-      - "video_server.py"
+      - "-v"
       - "/videos/{video filename}"      # Put your video file name here
 
 volumes:
