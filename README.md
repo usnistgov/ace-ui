@@ -36,16 +36,6 @@ To UI can now be accessed at: http://localhost:5000/
 
 # Detailed Information
 
-### ACE API docker container
-This project supplies with a docker environment. To build the attached docker image, follow these steps:
-
-1. We will need the ace deployment docker image (datamachines/nist-ace:0.1). Run the build.sh script from ACE repository to generate this image. See for more information https://github.com/usnistgov/ACE#example-deployment 
-2. Run `docker build -t datamachines/ace-ui:0.1 .` from the root of the project to generate the docker image
-3. Run  `docker run -p 5000:5000 datamachines/ace-ui:0.1` to start an instance of ace-ui
-4. Access the UI
-    To access the management UI, visit: http://localhost:5000/  
-    To access the API documentation, visit http://localhost:5000/api/v1/ui
-
 ### Makefile shortcuts
 To make development easier, a makefile was included. Run `make help` from the root of the project to see the documentation. As of writing this README, you can use the following options:
 
