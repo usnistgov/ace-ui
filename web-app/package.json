@@ -22,6 +22,7 @@
   },
   "scripts": {
     "start": "REACT_APP_API_URL=http://localhost:5000 react-scripts start",
+    "start-prod": "PORT=3549 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "test:ci": "CI=true react-scripts test --env=jsdom",
