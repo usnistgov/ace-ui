@@ -10,7 +10,7 @@ version: "2"
 services:
   # ACE SERVICES
   ace:
-    image: datamachines/nist-ace:demo
+    image: datamachines/nist-ace:${APP_VERSION}
     restart: always
     command:
       - "tail" 
@@ -18,17 +18,18 @@ services:
       - "/dev/null"
 
   api-server:  
-   image: datamachines/ace-ui:demo
+   image: datamachines/ace-ui:${APP_VERSION}
    restart: always
+   depends_on:
+     - nats_server
    volumes:
-    #  - "./run.py:/ace-ui/run.py"  # Uncomment to test demo changes
+     - "./:/ace-ui/"  # Uncomment to test demo changes
      - "./docker-compose.yml:/ace-ui/static/docker-compose.yml"
-     - "./static/settings.yml:/ace-ui/static/settings.yml"
-   ports: 
+   ports:
      - "5000:5000"
     
   opencv-object-detector:
-    image: ocv-ssd:demo
+    image: ocv-ssd:${APP_VERSION}
     restart: always
     labels:
       type: analytics
@@ -36,7 +37,7 @@ services:
       - "--verbose"
 
   ssd-mobilenet-object-detector:
-    image: ocv-ssd:demo
+    image: ocv-ssd:${APP_VERSION}
     restart: always
     labels:
       type: analytics
@@ -44,7 +45,7 @@ services:
       - "--verbose"
 
   act_detector:
-    image: act-recognition:demo
+    image: act-recognition:${APP_VERSION}
     labels:
       type: analytics
     restart: always
@@ -68,6 +69,14 @@ services:
         - influxdb-storage:/var/lib/influxdb
     environment:
         INFLUXDB_DB: ace
+  reverse:
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/config:/etc/nginx
+      - ./nginx/certs:/etc/ssl/private
   grafana:
     image: grafana/grafana
     restart: always
@@ -77,11 +86,11 @@ services:
         - influxdb
     volumes:
         - grafana-storage:/var/lib/grafana
-  
-
+        - "./grafana/conf:/usr/share/grafana/conf"
+        - "./grafana/conf/grafana.ini:/etc/grafana/grafana.ini"
 # Additional Video Streams
   video_file_1:
-    image: video_server:demo
+    image: video_server:${APP_VERSION}
     restart: always
     labels:
       type: video
@@ -89,10 +98,9 @@ services:
       - $PWD:/videos
     command:
       - "-v"
-      - "/videos/{video filename}"      # Put your video file name here
-
+      - "/videos/{a filename}"
   video_file_2:
-    image: video_server:demo
+    image: video_server:${APP_VERSION}
     restart: always
     labels:
       type: video
