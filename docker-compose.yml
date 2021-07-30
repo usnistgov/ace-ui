@@ -70,6 +70,9 @@ services:
     environment:
         INFLUXDB_DB: ace
   reverse:
+    depends_on:
+      - api-server
+      - grafana
     image: nginx
     ports:
       - 80:80

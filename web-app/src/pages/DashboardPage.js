@@ -157,11 +157,6 @@ class DashboardPage extends React.Component {
 
 
                     </Grid>
-                    <Grid container spacing={3}>
-                        <iframe
-                            src="http://api-ui.test.local/grafana/d-solo/nckRRtznk/ace-ui?orgId=1&from=1624313781092&to=1624918581092&panelId=2"
-                            width="450" height="200" frameBorder="0"></iframe>
-                    </Grid>
 
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
