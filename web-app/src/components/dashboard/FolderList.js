@@ -20,6 +20,7 @@ class FolderList extends React.Component {
             stream_notifications: {},
         };
 
+
         if (props.data) {
 
 
@@ -60,7 +61,7 @@ class FolderList extends React.Component {
 
                                 let notifications = this.state.stream_notifications?.[ids];
                                 let notification_label = value[1].notification?.[index]?.csv ?? "None"
-                                sub_title.push(value[1].analytics[index] + "(" + notification_label + "), ");
+                                sub_title.push(value[1].analytics[index] + "(" + notification_label + "), \n");
                                 if (notifications) {
                                     sub_notification.push(notifications);
                                 }

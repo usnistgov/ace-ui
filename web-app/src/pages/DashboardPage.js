@@ -8,7 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import {NotificationsActive, Storage} from "@material-ui/icons";
 import FolderList from "../components/dashboard/FolderList";
 import CircularProgress from '@material-ui/core/CircularProgress';
-import socketIOClient from "socket.io-client";
+import {io} from "socket.io-client";
 
 // const DashboardPage = () => {
 //
@@ -16,15 +16,12 @@ import socketIOClient from "socket.io-client";
 class DashboardPage extends React.Component {
 
     state = {
-        entriesCount: 0,
-        categories: [],
-        starCount: 0,
-        forkCount: 0,
 
     };
 
     constructor(props) {
         super(props);
+
 
         if (props.settings) {
             this.state = {
@@ -38,7 +35,7 @@ class DashboardPage extends React.Component {
         if (process.env.REACT_APP_API_URL) {
             ENDPOINT = process.env.REACT_APP_API_URL
         }
-        const socket = socketIOClient(ENDPOINT);
+        const socket = io(ENDPOINT);
 
 
         socket.on('notification', (msg) => {
@@ -138,7 +135,7 @@ class DashboardPage extends React.Component {
                         <Grid item xs={12} sm={6} md={3}>
                             <Link to="/app/table/data" className="button">
                                 <InfoBox Icon={Storage} color={lightBlue[700]} title="Analytics "
-                                         value={this.state.settings.analytics.length}/>
+                                         value={this.state.settings?.analytics?.length}/>
                             </Link>
                         </Grid>
                         <Grid item xs={12} sm={6} md={3}>
@@ -157,7 +154,6 @@ class DashboardPage extends React.Component {
 
 
                     </Grid>
-
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <FolderList data={this.state.settings.configuration}

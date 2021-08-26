@@ -8,7 +8,7 @@ import LeftDrawer from "../components/LeftDrawer";
 import RightDrawer from "../components/RightDrawer";
 import Dashboard from "./DashboardPage";
 import ButtonBase from "@material-ui/core/ButtonBase";
-import Form from "./ConfigurePage";
+import Form from "./configurePage";
 
 import DataTable from "./Table/DataTables";
 import AnalyticsPage from "./AnalyticsPage";
