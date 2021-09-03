@@ -23,7 +23,8 @@ services:
    depends_on:
      - nats_server
    volumes:
-     - "./:/ace-ui/"  # Uncomment to test demo changes
+#     - "./run.py:/ace-ui/run.py"  # Uncomment to test demo changes
+#     - "./ace_db.py:/ace-ui/ace_db.py"  # Uncomment to test demo changes
      - "./docker-compose.yml:/ace-ui/static/docker-compose.yml"
    ports:
      - "5000:5000"
@@ -75,8 +76,7 @@ services:
       - grafana
     image: nginx
     ports:
-      - 80:80
-      - 443:443
+      - 8999:8999
     volumes:
       - ./nginx/config:/etc/nginx
       - ./nginx/certs:/etc/ssl/private
@@ -92,26 +92,26 @@ services:
         - "./grafana/conf:/usr/share/grafana/conf"
         - "./grafana/conf/grafana.ini:/etc/grafana/grafana.ini"
 # Additional Video Streams
-  video_file_1:
-    image: video_server:${APP_VERSION}
-    restart: always
-    labels:
-      type: video
-    volumes:
-      - $PWD:/videos
-    command:
-      - "-v"
-      - "/videos/{a filename}"
-  video_file_2:
-    image: video_server:${APP_VERSION}
-    restart: always
-    labels:
-      type: video
-    volumes:
-      - $PWD:/videos
-    command:
-      - "-v"
-      - "/videos/{video filename}"      # Put your video file name here
+#  video_file_1:
+#    image: video_server:${APP_VERSION}
+#    restart: always
+#    labels:
+#      type: video
+#    volumes:
+#      - $PWD:/videos
+#    command:
+#      - "-v"
+#      - "/videos/{a filename}"
+#  video_file_2:
+#    image: video_server:${APP_VERSION}
+#    restart: always
+#    labels:
+#      type: video
+#    volumes:
+#      - $PWD:/videos
+#    command:
+#      - "-v"
+#      - "/videos/{video filename}"      # Put your video file name here
 
 volumes:
   grafana-storage:
