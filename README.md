@@ -9,7 +9,7 @@ Code in this repository, ace-api-and-ui, allows end users to interact, monitor, 
 * docker-compose
 * unix terminal with makefile installed
 ### build and run
-Run `make docker-build && make start-ace`
+Run ```make build &&  && make start``` 
 
 To access the management UI, visit: http://localhost:5000/  
 Note that this project requires NIST-ACE docker images to be available and running for the UI to work properly. See ace repository for details.
@@ -33,14 +33,11 @@ To make development easier, a makefile was included. Run `make help` from the ro
 ```
 $make help
 help                           This help.
-python-start                   start local python server
-pip-install                    install requirements.txt
-docker-build                   Build the container
-docker-build-nc                Build the container without any cache
-docker-run                     Run container
-docker-up                      Build and run this project in a container
-docker-stop                    Stop and remove container running this project
-start-ace                      start ace stack using docker-compose
+dev                            install requirements.txt
+build                          Build ace containers
+start                          start ace stack using docker-compose
+stop                           stop ace stack using docker-compose
+
 ```
 
 

@@ -1,0 +1,8 @@
+#DO NOT REMOVE. This file used by python tests
+stream_source:
+  - "Big buck bunny": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+  - "Dog day care": "http://76.174.92.213/mjpg/video.mjpg"
+  - "Hotel lobby": "http://158.58.130.148/mjpg/video.mjpg"
+  - "local video 1": "http://video1:6420/cam.mjpg"
+  - "local video 2": "http://video2:6421/cam.mjpg"
+docker_compose_location: "./static/docker-compose.yml"
