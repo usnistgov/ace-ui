@@ -92,26 +92,26 @@ services:
         - "./grafana/conf:/usr/share/grafana/conf"
         - "./grafana/conf/grafana.ini:/etc/grafana/grafana.ini"
 # Additional Video Streams
-#  video_file_1:
-#    image: video_server:${APP_VERSION}
-#    restart: always
-#    labels:
-#      type: video
-#    volumes:
-#      - $PWD:/videos
-#    command:
-#      - "-v"
-#      - "/videos/{a filename}"
-#  video_file_2:
-#    image: video_server:${APP_VERSION}
-#    restart: always
-#    labels:
-#      type: video
-#    volumes:
-#      - $PWD:/videos
-#    command:
-#      - "-v"
-#      - "/videos/{video filename}"      # Put your video file name here
+  video_file_1:
+    image: video_server:${APP_VERSION}
+    restart: always
+    labels:
+      type: video
+    volumes:
+      - $PWD:/videos
+    command:
+      - "-v"
+      - "/videos/{a filename}"
+  video_file_2:
+    image: video_server:${APP_VERSION}
+    restart: always
+    labels:
+      type: video
+    volumes:
+      - $PWD:/videos
+    command:
+      - "-v"
+      - "/videos/{video filename}"      # Put your video file name here
 
 volumes:
   grafana-storage:
