@@ -9,7 +9,7 @@ The user interface application consist of the following parts:
 
 
 ## Configuration Page
-![2021-05-11_14-12-37](https://github.com/usnistgov/ace-ui/blob/feature/demo-fix/docs/data/config_page.png?raw=true)
+![2021-05-11_14-12-37](data/config_page.png?raw=true)
 
 The configuration page allows the user to link analytics to a stream. To go to the configuration page, click Configure on the left sidebar of the page.
 
@@ -21,7 +21,7 @@ After submitting the configuration form, if the configuration was successful you
 
 ## Dashboard Page
 
-![2021-05-11_13-49-10](https://github.com/usnistgov/ace-ui/blob/feature/demo-fix/docs/data/dashboard_page.png?raw=true)
+![2021-05-11_13-49-10](data/dashboard_page.png?raw=true)
 The dashboard gives an overview of the ACE system. The dashboard page offers ways to see and configure notifications and buttons to view detailed information about streams and analytics. 
 
 
