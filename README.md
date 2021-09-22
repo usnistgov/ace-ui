@@ -20,25 +20,22 @@ You'll want to these packages for running and testing the full code base
   more details on building these). TLDR: clone [ACE Framework](http://github.com/usnistgov/ace) and run `bash build.sh`
   
 ## Quick Start
-
-1. Clone this repository 
-```shell
-git clone https://github.com/usnistgov/ace-ui.git
-```
-2. Install docker and docker-compose
-3. Build ACE framework by running
+1. Install docker and docker-compose
+2. Build ACE framework by running
 ```shell
 git clone http://github.com/usnistgov/ace.git
 cd ace
 bash build.sh
 ```
-4. Build ACE-UI by running 
+3. Build ACE-UI by running 
 ```shell
+cd ../
+git clone https://github.com/usnistgov/ace-ui.git
 cd ../ace-ui
 make build
 ```
-5. start the application run `make start`
-6. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
+4. start the application run `make start`
+5. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
 
 
 ### Makefile shortcuts
