@@ -8,12 +8,52 @@ The ACE UI Application is a small web-based application built upon the [ACE Fram
 * [Contribution](CONTRIBUTING.md) Guide on contributing to this repository
 
 
-## Quick Start
+
 ### Requirements
-* docker
-* docker-compose
-* unix terminal with makefile installed
-* ACE base containers and analytics built on the system (See the [ACE Framework](http://github.com/usnistgov/ace) for more details on building these)
+
+You'll want to these packages for running and testing the full code base
+
+* [docker](https://docs.docker.com/get-docker/)
+* [docker compose](https://docs.docker.com/compose/install/)
+* unix terminal with makefile installed. Most unix terminal has makefile installed by default. 
+* ACE base containers and analytics built on the system (See the [ACE Framework](http://github.com/usnistgov/ace) for 
+  more details on building these). TLDR: clone [ACE Framework](http://github.com/usnistgov/ace) and run `bash build.sh`
+  
+## Quick Start
+
+1. Clone this repository 
+```shell
+git clone https://github.com/usnistgov/ace-ui.git
+```
+2. Install docker and docker-compose
+3. Build ACE framework by running
+```shell
+git clone http://github.com/usnistgov/ace.git
+cd ace
+bash build.sh
+```
+4. Build ACE-UI by running 
+```shell
+cd ../ace-ui
+make build
+```
+5. start the application run `make start`
+6. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
+
+
+### Makefile shortcuts
+To make development easier, a makefile was included. Run `make help` from the root of the project to see the documentation. As of writing this README, you can use the following options:
+
+```
+$make help
+help                           This help.
+dev                            install requirements.txt
+build                          Build ace containers
+start                          start ace stack using docker-compose
+stop                           stop ace stack using docker-compose
+```
+
+
 
 ### Build and configure the Application
 * Run `make docker-build` to build the ACE API server docker container
@@ -33,21 +73,3 @@ video_file_1:
 Two local video files can be configured this way using the example docker-compose deployment provided.
 
 For additional information on configuring the application see the [documentation](docs)
-
-### Running Application
-1. Build the required docker containers by running `make build`. 
-2. start the application run `make start`
-3. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
-
-
-### Makefile shortcuts
-To make development easier, a makefile was included. Run `make help` from the root of the project to see the documentation. As of writing this README, you can use the following options:
-
-```
-$make help
-help                           This help.
-dev                            install requirements.txt
-build                          Build ace containers
-start                          start ace stack using docker-compose
-stop                           stop ace stack using docker-compose
-```
