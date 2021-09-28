@@ -26,12 +26,13 @@ video_file_1:
 ```
 Two local video files can be configured this way using the example docker-compose deployment provided.
 
+
 For additional information on configuring the application see the [documentation](docs)
 
-### Running Application
-1. Build the required docker containers by running `make build`. 
-2. start the application run `make start`
-3. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
+### Running the Application
+To start the applciation run `make docker start`
+
+To UI can now be accessed at: http://localhost:5000/  
 
 
 # Detailed Information
