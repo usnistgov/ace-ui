@@ -70,3 +70,7 @@ video_file_1:
 Two local video files can be configured this way using the example docker-compose deployment provided.
 
 For additional information on configuring the application see the [documentation](docs)
+
+## Using public video streams.
+Once the UI is available you can access it from the IP of your running docker VM (my case 127.0.0.1:8999) and can add streams to the UI http://127.0.0.1:8999/app/form
+Find a stream to add to the dashboard from http://www.insecam.org/en/bytype/Axis/ and from here, right click any video and select copy image address, you can use the address as video stream on the configuration tab as a custom stream source
