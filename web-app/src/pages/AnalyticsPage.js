@@ -8,7 +8,7 @@ import DataBox from "../components/analytics/DataBox";
 import {green, grey} from "@material-ui/core/colors";
 import AlarmIcon from '@material-ui/icons/Alarm';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
-import AlertTable from "../components/analytics/AlertTable";
+
 import Fab from '@material-ui/core/Fab';
 
 import Box from '@material-ui/core/Box';
@@ -144,15 +144,7 @@ class AnalyticsPage extends React.Component {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={12}>
 
-                        <Paper hidden={true}>
-                            <h1>Alerts for : {this.state.analyticsName} </h1>
-                            <AlertTable/>
-
-
-                        </Paper>
-                    </Grid>
                 </Grid>
 
 

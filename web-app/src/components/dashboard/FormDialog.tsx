@@ -33,10 +33,10 @@ export default function FormDialog({data, item}) {
         state.textFieldValue.split(',').forEach(function (entry) {
             objects[entry.trim().toLocaleLowerCase()] = {}
         });
-        let creationSuccess = undefined;
-        if (state.optionField === "all") {
-            for (let index = 0; index < data[1].analytics.length; index++)  {
-                if(creationSuccess === false){
+        let creationSuccess = true;
+        if (state.optionField === -1) {
+            for (let index = 0; index < data[1].analytics.length; index++) {
+                if (creationSuccess === false) {
                     // exit function if there were errors on previous creation
                     continue;
                 }
@@ -89,9 +89,9 @@ export default function FormDialog({data, item}) {
                 return true;
             } else {
                 handleRequestError(JSON.stringify(body_json))
-                return false;
             }
         }
+        return false;
     }
     const handleRequestError = function (err) {
         console.warn(err);
@@ -109,7 +109,7 @@ export default function FormDialog({data, item}) {
     const handleRequestOk = function (message) {
         console.info(message);
         enqueueSnackbar("Success: " + message, {
-            variant: 'Success',
+            variant: 'success',
             autoHideDuration: 2000,
             persist: false,
             anchorOrigin: {
@@ -128,11 +128,12 @@ export default function FormDialog({data, item}) {
 
     };
 
-    const handleOptionChange = (event, index, value) => {
-
+    const handleOptionChange = (event) => {
+        let prev_data = data[1]?.notification?.[event.target.value]?.csv ?? "";
         setState(prevState => ({
             ...prevState,
-            optionField: event.target.value
+            optionField: event.target.value,
+            textFieldValue: prev_data,
         }));
 
     }
@@ -145,6 +146,7 @@ export default function FormDialog({data, item}) {
     //     });
     //
     // };
+    // @ts-ignore
     return (
 
 
@@ -171,7 +173,7 @@ export default function FormDialog({data, item}) {
                             onChange={handleOptionChange}
                             autoWidth
                         >
-                            <MenuItem value="all">
+                            <MenuItem value={-1}>
                                 <em>all</em>
                             </MenuItem>
 

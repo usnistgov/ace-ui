@@ -26,6 +26,7 @@ video_file_1:
 ```
 Two local video files can be configured this way using the example docker-compose deployment provided.
 
+
 For additional information on configuring the application see the [documentation](docs)
 
 ### Running the Application
@@ -42,14 +43,10 @@ To make development easier, a makefile was included. Run `make help` from the ro
 ```
 $make help
 help                           This help.
-python-start                   start local python server
-pip-install                    install requirements.txt
-docker-build                   Build the container
-docker-build-nc                Build the container without any cache
-docker-run                     Run container
-docker-up                      Build and run this project in a container
-docker-stop                    Stop and remove container running this project
-start-ace                      start ace stack using docker-compose
+dev                            install requirements.txt
+build                          Build ace containers
+start                          start ace stack using docker-compose
+stop                           stop ace stack using docker-compose
 ```
 
 

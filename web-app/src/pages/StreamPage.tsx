@@ -1,37 +1,44 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
 import globalStyles from "../styles";
 import Grid from "@material-ui/core/Grid";
-import DataBox from "../components/analytics/DataBox";
-import {green, red} from "@material-ui/core/colors";
+import {green} from "@material-ui/core/colors";
 import {Button} from '@material-ui/core';
 
 import Box from '@material-ui/core/Box';
 import ClientComponent from "../components/analytics/Socket";
-import {CheckCircle, Delete} from "@material-ui/icons";
+import {Delete} from "@material-ui/icons";
+import PropTypes from "prop-types";
 
-import Tooltip from '@material-ui/core/Tooltip';
+const propTypes = {
 
-class StreamPage extends React.Component {
+    match: PropTypes.any, // eslint-disable-line
+
+
+};
+//
+// const stateTypes = {
+//     settings:  PropTypes.any,
+//     notification_data: PropTypes.any,
+//     stream_notifications: PropTypes.any,
+//     analytics_data: PropTypes.any,
+//     data: PropTypes.arrayOf(PropTypes.object),
+//
+// };
+
+
+class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>, any> {
 
 
     constructor(props) {
         super(props);
-
         this.state = {
-            order: "asc",
-            orderBy: "id",
-            selected: [],
+
 
             streamName: this.props.match.params.handle,
             loading: false,
-
-            page: 0,
-            rowsPerPage: 10,
+            data: [],
             alert: [{score: 3, logic: "<"}, {score: 50, logic: ">"}, {score: 50, logic: ">"}]
         };
-
-
     };
 
     async configKill(analyticsName) {
@@ -43,7 +50,7 @@ class StreamPage extends React.Component {
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL
         }
-        console.log(API_URL);
+
         this.setState({loading: true});
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -60,7 +67,6 @@ class StreamPage extends React.Component {
 
         if (response) {
             var body_json = await response.json();
-            console.log(body_json);
 
             if (response.ok) {
                 this.handleRequestOk(body_json.join(body_json))
@@ -127,7 +133,7 @@ class StreamPage extends React.Component {
             }
         };
 
-        const {classes} = this.props;
+
 
 
         return (
@@ -137,69 +143,44 @@ class StreamPage extends React.Component {
                 <h1 style={globalStyles.navigation}>stream/{this.state.streamName}</h1>
 
                 <h3>Information:</h3>
-                {!this.state.data || !this.state.data.length > 0 ? "No info found"
+                {!this.state.data || !(this.state.data?.length > 0) ? "No info found"
                     :
                     <div>
 
                         <h3 style={globalStyles.navigation}> Running: {this.state.data.length} analytics on <a
                             href={this.state.data[0]["stream"]} target="_blank">{this.state.data[0]["stream"]}</a></h3>
 
-
                     </div>
                 }
 
-                <h3>Running analytics (Click to delete)</h3>
-                {!this.state.data ? "No info found"
-                    :
-
-                    <Grid container spacing={3}>
 
 
-                        {this.state.data.map(object =>
-                            <Grid item xs={12} sm={12} md={6} lg={4}>
-                                <Tooltip title="Click to delete this analytics">
-                                    <Button to="" className="button" color="secondary"
-                                            onClick={() => this.configKill(object["analytics"])}>
-                                        <Paper>
-                                            {this.state.loading ? <DataBox Icon={Delete}
-                                                                           title=""
-                                                                           color={red[500]}
-                                                                           value={object["analytics"]}/> :
-
-                                                <DataBox Icon={CheckCircle}
-                                                         title=""
-                                                         color={green[500]}
-                                                         value={object["analytics"]}/>
-                                            }
-                                        </Paper>
-
-                                    </Button>
-
-                                </Tooltip>
-                            </Grid>
-                        )
-                        }
 
 
-                    </Grid>
-                }
+
 
                 <h3>Event streams</h3>
 
                 <Grid container spacing={3}>
 
 
-                    {!this.state.data || !this.state.data.length > 0 ? "No info found" : this.state.data.map(object =>
+                    {!this.state.data || !(this.state.data.length > 0) ? "No info found" : this.state.data.map(object =>
                         <Grid item xs={12} sm={6} md={6}>
 
                             <Box display="flex" flexDirection="column" border={2} borderColor="secondary.main"
                                  borderRadius={16} m={1} p={2}>
-
+                                <Button
+                                    onClick={() => this.configKill(object["analytics"])}
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<Delete/>}
+                                >
+                                    Delete
+                                </Button>
 
                                 <ClientComponent
                                     subject={"stream." + object["id"] + ".analytic." + object["analytics"]}
-                                    title={object["analytics"]}/>
-
+                                    title={object["analytics"]} configId={object["id"]}/>
 
                             </Box>
 

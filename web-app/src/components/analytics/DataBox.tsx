@@ -1,13 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
-import CountUp from "react-countup";
 import Paper from "@material-ui/core/Paper";
 import {grey} from "@material-ui/core/colors";
+import {StylesDictionary} from "../StylesDictionary";
 
-class InfoBox extends React.Component {
+const propTypes = {
+    Icon: PropTypes.any, // eslint-disable-line
+    color: PropTypes.string,
+    title: PropTypes.string,
+    value: PropTypes.string
+};
+
+type ComponentProps = PropTypes.InferProps<typeof propTypes>;
+
+class DataBox extends React.Component<ComponentProps, any> {
     render() {
-        const {color, title, value, Icon, start = 0} = this.props;
-        const styles = {
+        const {color, title, value, Icon} = this.props;
+        const styles: StylesDictionary = {
             content: {
                 padding: "5px 10px",
                 marginLeft: 90,
@@ -29,7 +38,7 @@ class InfoBox extends React.Component {
                 height: 90,
                 width: 90,
                 textAlign: "center",
-                backgroundColor: color
+                backgroundColor: color || grey[500]
             },
             icon: {
                 height: 48,
@@ -43,13 +52,14 @@ class InfoBox extends React.Component {
             <Paper>
         <span style={styles.iconSpan}>
           <div style={{color: "white"}}>
-            <Icon style={styles.icon}/>
+            <Icon style={styles.icon} color="white"/>
           </div>
         </span>
                 <div style={styles.content}>
                     <span style={styles.text}>{title}</span>
                     <div style={styles.number}>
-                        <CountUp start={start} end={value} separator="," duration={1}/>
+                        <span style={styles.text}>{value}</span>
+
                     </div>
                 </div>
             </Paper>
@@ -57,11 +67,5 @@ class InfoBox extends React.Component {
     }
 }
 
-InfoBox.propTypes = {
-    Icon: PropTypes.any, // eslint-disable-line
-    color: PropTypes.string,
-    title: PropTypes.string,
-    value: PropTypes.any
-};
 
-export default InfoBox;
+export default DataBox;

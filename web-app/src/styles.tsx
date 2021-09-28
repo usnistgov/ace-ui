@@ -1,6 +1,7 @@
 import {grey} from "@material-ui/core/colors";
+import {StylesDictionary} from "./components/StylesDictionary";
 
-const styles = {
+const styles: StylesDictionary = {
     navigation: {
         fontSize: 15,
         fontWeight: 300,

@@ -5,6 +5,10 @@
     "@material-ui/core": "^4.5.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/styles": "^4.5.0",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.3.0",
+    "@types/react": "^17.0.5",
+    "@types/react-dom": "^17.0.5",
     "classnames": "^2.2.6",
     "faker": "^4.1.0",
     "font-awesome": "^4.7.0",
@@ -14,22 +18,21 @@
     "react-countup": "^4.2.2",
     "react-dom": "latest",
     "react-router-dom": "^5.2.0",
-    "react-time-ago": "6.2.2",
-    "javascript-time-ago": "2.3.4",
     "react-scripts": "^4.0.3",
+    "react-time-ago": "^6.2.2",
     "recharts": "^1.3.4",
-    "socket.io-client": "^3.1.0"
+    "socket.io-client": "^3.1.0",
+    "typescript": "^4.2.4"
   },
   "scripts": {
     "start": "REACT_APP_API_URL=http://localhost:5000 react-scripts start",
-    "start-prod": "PORT=3549 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "test:ci": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "lint": "eslint --ext .js --ext .jsx src/"
+    "lint": "eslint --ext .js --ext .jsx -ext .ts src/"
   },
   "browserslist": [
     ">0.2%",
