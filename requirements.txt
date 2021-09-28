@@ -1,7 +1,7 @@
 connexion[swagger-ui]
 connexion>=2.2.0
 eventlet==0.30.2
-Flask-Cors==1.10.3
+Flask-Cors==3.0.9
 Flask-SocketIO==5.0.1
 protobuf==3.15.8
 PyYAML==5.3.1
