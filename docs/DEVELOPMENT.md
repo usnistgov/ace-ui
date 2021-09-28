@@ -1,9 +1,9 @@
 # Code modules
 
-## ACE-api
+## ACE-API
 
 ACE API has three layers (socket-io, open-api, and Flask) , all served from ./run.py. When the flask app receives a
-request it goes though the layers for handling any incoming request.
+request it goes through the layers for handling any incoming request.
 
 * If the incoming request protocol matches socket-io, it gets handled first
 * Next, it matches the request against open-api protocol
@@ -47,7 +47,7 @@ pytest ./test
 
 ### Code structure for python backend
 
-There are three components to python applciation
+There are three components to python application
 
 * [run.py](../run.py) contains API related code. We use open-api for linking the python functions with the API
   endpoints. Please see [openapi/ace_api.yaml](../openapi/ace_api.yaml) for how the API was designed. Furthermore, when
@@ -107,9 +107,9 @@ The front end is written in Javascript and typescript and packaged with NodeJS. 
 
 ## Infrastructure and configuration
 
-We use nginx, grafana, nats.io and several other components in the background to run this system.
+We use N, Grafana, Nats.io and several other components in the background to run this system.
 
 * [../nginx](../nginx) directory contains configuration on how the reverse proxy was setup for this application.
-* [../grafana](../grafana) directory contains configuration on grafana. See
-  the [docker-compose.yaml](../docker-compose.yml) to learn about how these directories are mounted to nginx and grafana
+* [../grafana](../grafana) directory contains configuration on Grafana. See
+  the [docker-compose.yaml](../docker-compose.yml) to learn about how these directories are mounted to nginx and Grafana
   containers. 

@@ -1,6 +1,6 @@
 # ACE UI Application
 ##  Introduction
-The ACE UI Application is a small web-based application built upon the [ACE Framework](http://github.com/usnistgov/ace). This application allows end users to interact, monitor, and configure with underlying ACE environment from a web dashboard. A preconfigured docker-compose file is provided with an example setup, but customization and extension of the application (e.g., additional or different analytics) is possible through modifying configuration files.
+The ACE UI Application is a small web-based application built upon the [ACE Framework](http://github.com/usnistgov/ace). This application allows end users to interact, monitor, and configure with underlying ACE environment from a web dashboard. A preconfigured docker-compose file is provided with an example setup, but customization and extension of the application (e.g., additional or different analytics) are possible through modifying configuration files.
 
 ## Detailed Documentations 
 * [Usage](docs/USAGE.md) Details on how to use the user interface.
@@ -11,7 +11,7 @@ The ACE UI Application is a small web-based application built upon the [ACE Fram
 
 ### Requirements
 
-You'll want to these packages for running and testing the full code base
+You'll want to these packages for running and testing the full codebase
 
 * [docker](https://docs.docker.com/get-docker/)
 * [docker compose](https://docs.docker.com/compose/install/)
@@ -54,7 +54,7 @@ stop                           stop ace stack using docker-compose
 
 ### Build and configure the Application
 * Run `make docker-build` to build the ACE API server docker container
-* To use local video files for testing, drop those files into this directory and update the `docker-compose.yml` file so that one of the video_file containers references your file (and example is shown below)
+* To use local video files for testing, drop those files into this directory and update the `docker-compose.yml` file so that one of the video_file containers references your file (an example is shown below)
 ``` 
 video_file_1:
     image: video_server:demo
@@ -71,6 +71,7 @@ Two local video files can be configured this way using the example docker-compos
 
 For additional information on configuring the application see the [documentation](docs)
 
-## Using public video streams.
-Once the UI is available you can access it from the IP of your running docker VM (my case 127.0.0.1:8999) and can add streams to the UI http://127.0.0.1:8999/app/form
-Find a stream to add to the dashboard from http://www.insecam.org/en/bytype/Axis/ and from here, right click any video and select copy image address, you can use the address as video stream on the configuration tab as a custom stream source
+#### Using public video streams
+Once the UI is available you can access it from the IP of your running docker VM (my case 127.0.0.1:8999/app) and can add streams to the UI http://127.0.0.1:8999/app/form
+##### To add a public video stream available on insecam:
+Find a stream to add to the dashboard from http://www.insecam.org/en/bytype/Axis/ and from here, right-click any video and select copy image address. You can use the address as a video stream on the configuration tab as a custom stream source. Adding a custom source URL is available when you toggle "Use custom stream source" on the configure page.
