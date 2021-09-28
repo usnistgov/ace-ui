@@ -157,6 +157,7 @@ class DashboardPage extends React.Component {
 
 
                     </Grid>
+
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={6}>
                             <FolderList data={this.state.settings.configuration}

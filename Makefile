@@ -1,5 +1,6 @@
 # import config.
-export APP_NAME=datamachines/ace-ui:demo
+export APP_VERSION=demo
+export APP_NAME=datamachines/ace-ui:${APP_VERSION}
 export PORT=5000
 # You can change the default config with `make cnf="config_special.env" build`
 
@@ -25,7 +26,8 @@ pip-install: ## install requirements.txt
 # Build the container
 docker-build: ## Build the container
 	docker build -t $(APP_NAME) .
-	docker build -t video_server:demo -f contrib/video_server/Dockerfile contrib/video_server
+	docker build -t video_server:${APP_VERSION} -f contrib/video_server/Dockerfile contrib/video_server
+	cd web-app && docker build -t  $(APP_NAME)react .
 
 docker-build-nc: ## Build the container without any cache
 	docker build --no-cache -t $(APP_NAME) .
