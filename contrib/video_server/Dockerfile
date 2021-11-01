@@ -1,4 +1,4 @@
-FROM python:buster
+FROM python:3.10.0-buster
 RUN apt-get update
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 WORKDIR /usr/src/app
