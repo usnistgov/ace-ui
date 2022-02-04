@@ -23,19 +23,23 @@ You'll want to these packages for running and testing the full codebase
 1. Install docker and docker-compose
 2. Build ACE framework by running
 ```shell
-git clone http://github.com/usnistgov/ace.git
+git clone https://github.com/jhamilt5/ACE.git -b feature-macos
 cd ace
-bash build.sh
+make cpu_nist-ace_extra  # creates the images "datamachines/nist-ace:demo", "ocv-ssd:demo", "ace-test-analytic:demo", "act-recognition:demo", and "camera_stream:demo"
 ```
 3. Build ACE-UI by running 
 ```shell
 cd ../
-git clone https://github.com/usnistgov/ace-ui.git
-cd ../ace-ui
+git clone https://github.com/jhamilt5/ace-ui.git -b bugfix/fix-make-build-step
+cd ace-ui
 make build
 ```
-4. start the application run `make start`
+4. Start the application by running
+```shell
+make start
+```
 5. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
+6. You can now jump to the README section "Using public video streams" if you'd like
 
 
 ### Makefile shortcuts
