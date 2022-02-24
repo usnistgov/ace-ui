@@ -97,9 +97,12 @@ const ConfigurePage = ({settings}) => {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Accept': 'accept: */*',
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
+               // 'Accept': 'accept: */*',
+               // 'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+                 //"Access-Control-Allow-Credentials": "true",
+      //"Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+      //"Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization"
             },
             body: JSON.stringify(params),
         }).catch(error => {

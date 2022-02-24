@@ -71,7 +71,11 @@ _for dev_
 ```sh
 git clone <repository-url>
 
-cd ace-api/web-app
+cd ace-ui/web-app
+#install node 14 on your local laptop
+npm install node@14.18 --save-exact
+npm install serve -g
+
 # change into the new directory
 npm install
 
