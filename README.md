@@ -23,14 +23,14 @@ You'll want to these packages for running and testing the full codebase
 1. Install docker and docker-compose
 2. Build ACE framework by running
 ```shell
-git clone https://github.com/jhamilt5/ACE.git -b feature-macos
+git clone http://github.com/usnistgov/ace.git
 cd ace
 make cpu_nist-ace_extra  # creates the images "datamachines/nist-ace:demo", "ocv-ssd:demo", "ace-test-analytic:demo", "act-recognition:demo", and "camera_stream:demo"
 ```
 3. Build ACE-UI by running 
 ```shell
 cd ../
-git clone https://github.com/jhamilt5/ace-ui.git -b bugfix/fix-make-build-step
+git clone https://github.com/usnistgov/ace-ui.git
 cd ace-ui
 make build
 ```
