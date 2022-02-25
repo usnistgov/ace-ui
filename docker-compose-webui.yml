@@ -1,0 +1,17 @@
+# This compose file uses two containers built from the NIST-UI repository. Run the following commands prior
+# to starting the docker compose deployment.
+#
+# docker build -t datamachines/ace-ui:${APP_VERSION}  .
+#
+# cd lang/python/examples/analytics/opencv_object_detector && docker build -t ocv-ssd .
+
+
+version: "2"
+services:
+  ace-ui:  
+    env_file:
+      - ./web-app/.env 
+    image: datamachines/ace-ui-react:${APP_VERSION}
+    restart: always
+    ports:
+      - "80:3549"

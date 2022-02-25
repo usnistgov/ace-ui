@@ -6,6 +6,7 @@ The ACE UI Application is a small web-based application built upon the [ACE Fram
 * [Usage](docs/USAGE.md) Details on how to use the user interface.
 * [Development](docs/DEVELOPMENT.md) Guide on how to create local environment for development.
 * [Contribution](CONTRIBUTING.md) Guide on contributing to this repository
+* [README.md](web-app/README.md) Guide on how to build standalone webui docker/docker-compose.
 
 
 
@@ -52,7 +53,18 @@ dev                            install requirements.txt
 build                          Build ace containers
 start                          start ace stack using docker-compose
 stop                           stop ace stack using docker-compose
+start-web                      start web UI only
+stop-web                       stop web UI only
 ```
+
+### docker-compose files
+```
+docker-compose-gpu-enabled.yml   gpu enabled, generally used in GPU enabled service nodes
+docker-compose-webui.yml         WEB UI only, with api endpoint set in web-app/.env file 
+docker-compose.yml                full ACE services, with GPU disabled
+```
+
+
 
 
 
