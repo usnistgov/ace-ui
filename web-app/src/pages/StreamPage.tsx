@@ -1,14 +1,14 @@
-import React from "react";
 import globalStyles from "../styles";
 import Grid from "@material-ui/core/Grid";
-import {green} from "@material-ui/core/colors";
-import {Button} from '@material-ui/core';
+import { green } from "@material-ui/core/colors";
+import { Button } from '@material-ui/core';
 
 import Box from '@material-ui/core/Box';
 import ClientComponent from "../components/analytics/Socket";
-import {Delete} from "@material-ui/icons";
+import { Delete, Save } from "@material-ui/icons";
 import PropTypes from "prop-types";
-
+import { CSVLink } from "react-csv";
+import React, { useEffect, useState } from "react";
 const propTypes = {
 
     match: PropTypes.any, // eslint-disable-line
@@ -24,8 +24,24 @@ const propTypes = {
 //     data: PropTypes.arrayOf(PropTypes.object),
 //
 // };
-
-
+const headers = [
+    { label: "analytics", key: "analytics" },
+    { label: "analytics id", key: "analytics_id" },
+    { label: "id", key: "id" },
+    { label: "stream url", key: "stream" },
+    { label: "stream id", key: "stream_id" },
+    { label: "Detected object", key: "classification" },
+    { label: "Confidence", key: "confidence" },
+    { label: "Frame Number", key: "frameNum" },
+    { label: "Timestamp", key: "timestamp" },
+   // { label: "Tags", key: "tags" },
+    { label: "Session Id", key: "sessionId" },
+    { label: "analytics json", key: "analytics_json"},
+    { label: "data json", key: "data_json"},
+    { label: "frame Json", key: "frame_json"}
+];
+var fileData=[{}];
+  
 class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>, any> {
 
 
@@ -36,12 +52,83 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
 
             streamName: this.props.match.params.handle,
             loading: false,
+            processing: false,
             data: [],
-            alert: [{score: 3, logic: "<"}, {score: 50, logic: ">"}, {score: 50, logic: ">"}]
+            alert: [{ score: 3, logic: "<" }, { score: 50, logic: ">" }, { score: 50, logic: ">" }]
         };
     };
 
-    async configKill(analyticsName) {
+
+  /**
+   * 
+   * @param object  the alanytic object
+   * @param generateNew whether to generate an new report.
+   */
+   export(object, generateNew) {
+
+      
+        var key=object['id'] +object["analytics"]+"_data";
+        if(!generateNew && key in fileData){
+            return fileData[key];
+        }
+        var csvdata: any[] = [];
+        
+        var objectstr = localStorage.getItem(key);
+        var objectdata = objectstr ? JSON.parse(objectstr) : null;
+       
+
+        if (objectdata) {
+
+            for (var i in objectdata) {
+
+                var d = {}
+                for (var j in object) {
+                  
+                    d[j] = object[j]
+                }
+                d['classification'] = i;
+                var framedata = objectdata[i];
+               //console.log(framedata);
+               //console.log(framedata.length);
+                for (let k = 0; k < framedata.length; k++) {
+                     
+                    var fd=d;
+                    fd['confidence'] = framedata[k].data.roi[0].confidence;
+                    fd['frameNum'] = framedata[k].frame.frameNum;
+                    fd['timestamp'] = framedata[k].frame.timestamp;
+                    //d['tags'] = framedata[k].data.tags;
+                    fd['sessionId']= framedata[k].sessionId;
+                    fd['analytics_json']=JSON.stringify(framedata[k].analytic);
+                    fd['data_json']=JSON.stringify(framedata[k].data);
+                    fd['frame_json']=JSON.stringify(framedata[k].frame);
+                    csvdata.push(fd);
+                    //console.log(fd);
+                    //console.log("--------")
+                }
+
+
+            }
+        }
+        fileData[key]=csvdata;
+      
+        return csvdata;
+     
+    
+
+    };
+    exportcsv = (event, done, object) =>{
+        if(!this.state.processing){
+             this.setState({ processing: true });
+        }
+        console.log(event);
+        this.export(object, true);
+        done(true);
+
+
+
+
+    }
+    async configKill(analyticsName, id) {
         const params = {
             "analytic_host": analyticsName
         };
@@ -50,14 +137,15 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL
         }
-
-        this.setState({loading: true});
+        localStorage.removeItem(id+analyticsName+"_data");
+        //localStorage.removeItem(id+analyticsName+"_metadata");
+        this.setState({ loading: true });
         const response = await fetch(API_URL, {
             method: 'POST',
             mode: 'cors',
             headers: {
-                'Accept': 'accept: */*',
-                'Access-Control-Allow-Origin': '*',
+                //  'Accept': 'accept: */*',
+                //    'Access-Control-Allow-Origin': '*',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(params),
@@ -78,12 +166,12 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
     }
 
     handleRequestError(msg) {
-        this.setState({loading: false});
+        this.setState({ loading: false });
 
     }
 
     handleRequestOk(msg) {
-        this.setState({loading: false});
+        this.setState({ loading: false });
         this.componentWillMount();
 
     }
@@ -98,11 +186,12 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         fetch(API_URL)
             .then((response) => response.json())
             .then((responseJson) => {
-                this.setState({data: responseJson})
+          
+                 this.setState({ data: responseJson })
             })
             .catch((error) => {
                 console.error(error);
-                this.setState({data: []})
+                this.setState({ data: [] })
             });
 
     }
@@ -112,7 +201,7 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
 
         const addNotification = () => {
 
-            this.setState({alert: [...this.state.alert, {score: 3, logic: "<"}]})
+            this.setState({ alert: [...this.state.alert, { score: 3, logic: "<" }] })
 
 
         };
@@ -168,19 +257,39 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
                         <Grid item xs={12} sm={6} md={6}>
 
                             <Box display="flex" flexDirection="column" border={2} borderColor="secondary.main"
-                                 borderRadius={16} m={1} p={2}>
+                                borderRadius={16} m={1} p={2}>
                                 <Button
-                                    onClick={() => this.configKill(object["analytics"])}
+                                    onClick={() => this.configKill(object["analytics"], object['id'])}
                                     variant="contained"
                                     color="secondary"
-                                    startIcon={<Delete/>}
+                                    startIcon={<Delete />}
                                 >
                                     Delete
                                 </Button>
+                                <p></p>
+                            {object!=null && Object.keys(object).length>0? 
+                                    <Button variant="contained"
+                                    color="primary"
+                                    startIcon={<Save />}>
+                                  <CSVLink 
+                                  data={this.export(object, false)}
+                                  headers={headers}
+                                  filename="detected-objects_reports.csv"
+                                  target="_blank"
+                                   asyncOnClick={true}
+                                  onClick={(event, done)=>this.exportcsv(event, done, object)}
+                                  >
+                                    Export CSV
+                                    
+                                    </CSVLink>
+                                  </Button>
+                                    : <p></p>
+                            }
 
                                 <ClientComponent
+                                    url={this.state.data[0]["stream"]}
                                     subject={"stream." + object["id"] + ".analytic." + object["analytics"]}
-                                    title={object["analytics"]} configId={object["id"]}/>
+                                    title={object["analytics"]} configId={object["id"]} />
 
                             </Box>
 

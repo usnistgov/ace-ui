@@ -1,0 +1,167 @@
+# This compose file uses two containers built from the NIST-ACE repository. Run the following commands prior
+# to starting the docker compose deployment.
+#
+# docker build -t datamachines/nist-ace .
+#
+# cd lang/python/examples/analytics/opencv_object_detector && docker build -t ocv-ssd .
+
+
+version: "2"
+services:
+  # ACE SERVICES
+  ace:
+    image: datamachines/nist-ace:${APP_VERSION}
+    restart: always
+    command:
+      - "tail" 
+      - "-f" 
+      - "/dev/null"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+  api-server:  
+   image: datamachines/ace-ui:${APP_VERSION}
+   restart: always
+   depends_on:
+     - nats_server
+   volumes:
+#     - "./run.py:/ace-ui/run.py"  # Uncomment to test demo changes
+#     - "./ace_db.py:/ace-ui/ace_db.py"  # Uncomment to test demo changes
+     - "./docker-compose.yml:/ace-ui/static/docker-compose.yml"
+   ports:
+     - "5000:5000"
+    
+  opencv-object-detector:
+    image: ocv-ssd:${APP_VERSION}
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  ssd-mobilenet-object-detector:
+    image: ocv-ssd:${APP_VERSION}
+    restart: always
+    labels:
+      type: analytics
+    command:    
+      - "--verbose"
+
+  act_detector:
+    image: act-recognition:${APP_VERSION}
+    labels:
+      type: analytics
+    restart: always
+    ports:
+      - "3333:3000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  fire-detector:
+     image: fire-detection:latest
+     restart: always
+     labels:
+       type: analytics
+     ports:
+       - "3000:3000"
+     deploy:
+       resources:
+         reservations:
+           devices:
+             - capabilities: [gpu]
+  nats_server:
+    image: nats:2.1.9
+    restart: always
+    ports: 
+      - "4222:4222"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+
+
+# DATABASE AND GRAFANA VISUALIZATION SERVICES
+  influxdb:
+    image: influxdb:1.7
+    restart: always
+    ports:
+        - "8086:8086"
+    volumes:
+        - influxdb-storage:/var/lib/influxdb
+    environment:
+        INFLUXDB_DB: ace
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+  reverse:
+    depends_on:
+      - api-server
+      - grafana
+    image: nginx
+    ports:
+      - 8999:8999
+    volumes:
+      - ./nginx/config:/etc/nginx
+      - ./nginx/certs:/etc/ssl/private
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+        - "8088:3000"
+    depends_on:
+        - influxdb
+    volumes:
+        - grafana-storage:/var/lib/grafana
+        - "./grafana/conf:/usr/share/grafana/conf"
+        - "./grafana/conf/grafana.ini:/etc/grafana/grafana.ini"
+# Additional Video Streams
+  video_file_1:
+    image: video_server:${APP_VERSION}
+    #restart: always
+    labels:
+      type: video
+    volumes:
+      - $PWD:/videos
+    command:
+      - "-v"
+      - "/videos/{a filename}"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  video_file_2:
+    image: video_server:${APP_VERSION}
+    #restart: always
+    labels:
+      type: video
+    volumes:
+      - $PWD:/videos
+    command:
+      - "-v"
+      - "/videos/{video filename}"      # Put your video file name here
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+volumes:
+    grafana-storage:
+        external: true
+    influxdb-storage:
+        external: true

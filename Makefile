@@ -25,12 +25,13 @@ dev: ## install requirements.txt
 build: ## Build ace containers
 	docker build -t $(APP_NAME) .
 	docker build -t video_server:${APP_VERSION} -f contrib/video_server/Dockerfile contrib/video_server
-	cd web-app && docker build -t  $(APP_NAME)react .
+	cd web-app && docker build -t  datamachines/ace-ui-react:${APP_VERSION} .
 start: ## start ace stack using docker-compose
-	docker-compose --file ./docker-compose.yml up
+	docker-compose --file ./docker-compose.yml up -d
 stop: ## stop ace stack using docker-compose
 	docker-compose --file ./docker-compose.yml down
-
-
-
+start-web:  ## start web ui only in desktop environment, ACE service will be set in env, url is http://localhost 
+	docker-compose --file ./docker-compose-webui.yml up -d
+stop-web: ## stop ace ui 
+	docker-compose --file ./docker-compose-webui.yml down
 
