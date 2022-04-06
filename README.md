@@ -35,12 +35,18 @@ git clone https://github.com/usnistgov/ace-ui.git
 cd ace-ui
 make build
 ```
-4. Start the application by running
+4. Create the necessary external volumes 
+```shell
+ docker volume create grafana-storage
+ docker volume create influxdb-storage
+```
+
+5. Start the application by running
 ```shell
 make start
 ```
-5. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
-6. You can now jump to the README section "Using public video streams" if you'd like
+6. Using a web browser, go to this URL  http://localhost:8999/app/ to access the ACE UI
+7. You can now jump to the README section "Using public video streams" if you'd like
 
 
 ### Makefile shortcuts
