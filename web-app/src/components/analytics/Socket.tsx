@@ -35,8 +35,12 @@ export default function ClientComponent({ url, subject, title, configId }) {
     
     // save data to localStorage 
     const saveStateToLocalStorage = (objects, metadata) => {
+        try{
         localStorage.setItem(configId +title+ '_data', JSON.stringify(objects));
         localStorage.setItem(configId +title+ '_metadata', JSON.stringify(metadata));
+        }catch (e) {
+            localStorage.clear();
+        }
     }
 
 
