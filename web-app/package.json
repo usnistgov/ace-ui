@@ -58,6 +58,6 @@
     "node-sass": "^4.9.4",
     "prettier": "^1.14.3",
     "prettier-eslint": "^8.8.2"
-  },
-  "homepage": "/app/"
+  }
+  ,"homepage": "/app/"
 }
