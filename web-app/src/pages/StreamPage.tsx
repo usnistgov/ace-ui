@@ -55,7 +55,7 @@ stream: "",
 stream_id: "",
 timestamp: 1650419200
 }
-var fileData=[{}];
+
  
  const indexedDb = new IndexedDb('analyatic');
  const csvLink = React.createRef<any>()
@@ -89,9 +89,7 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
        
         var key=object['id'] +object["analytics"];
         
-        if(!generateNew && key in fileData){
-            return fileData[key];
-        }
+       
         var thedata: any[] = [initdata];
         await indexedDb.createObjectStore([key])
         var objectstr = await indexedDb.getValue(key, 1);
@@ -131,23 +129,12 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
 
             }
         }
-        fileData[key]=thedata;
+       
         this.setState({csvdata: thedata});
-        // click the CSVLink component to trigger the CSV download
-       /* setTimeout(() => {
-        if(csvLink!=null){ 
-        csvLink?.current?.click()
 
-        }
-        }, 2000);
-      
-         */   
-            
         return thedata;
-     
-    
-
     };
+
     exportcsv = async(event, object)  =>{
         
         if(!this.state.processing){
@@ -157,18 +144,12 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
        
         var data=await this.export(object, true);
         this.setState({csvdata: data, processing: false});
-               // setTimeout(() => {
-        if(csvLink!=null){ 
+              
+        
         csvLink?.current?.click()
 
-        }
-       // }, 2000);
-
-        
-        
-        //event.preventDefault() 
-        //event.stopPropagation();
-         //   event?.stopImmediatePropagation();
+       
+      
 
         }
     }
