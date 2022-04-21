@@ -12,6 +12,7 @@
     "classnames": "^2.2.6",
     "faker": "^4.1.0",
     "font-awesome": "^4.7.0",
+    "idb": "^7.0.1",
     "node": "14.18.3",
     "notistack": "^1.0.2",
     "prop-types": "latest",

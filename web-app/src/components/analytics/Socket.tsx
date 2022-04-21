@@ -4,6 +4,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Box, FormControl, FormLabel, Radio, RadioGroup } from '@material-ui/core';
 import ClientFrame from "./SocketFrame";
 import ImageFrameCard from "./ImageFrameCard";
+import IndexedDb from './IndexedDb';
+
 //import MjpegPlayerComponent from './MjpegPlayer';
 
 export default function ClientComponent({ url, subject, title, configId }) {
@@ -15,7 +17,9 @@ export default function ClientComponent({ url, subject, title, configId }) {
     if (process.env.REACT_APP_API_URL) {
         ENDPOINT = process.env.REACT_APP_API_URL
     }
-
+    const indexedDb = new IndexedDb('analyatic');
+    var counter=0;
+    var writing=false;
     const [jsonData, setJson] = useState({ "frame": undefined, "objects": [], "timestamp": undefined, "unique": [] });
     const [objects, setObjects] = useState({});
     const [dataView, setDataView] = React.useState('all');
@@ -34,13 +38,31 @@ export default function ClientComponent({ url, subject, title, configId }) {
 
     
     // save data to localStorage 
-    const saveStateToLocalStorage = (objects, metadata) => {
+    const saveStateToLocalStorage = async (objects, metadata) => {
         try{
-        localStorage.setItem(configId +title+ '_data', JSON.stringify(objects));
-        localStorage.setItem(configId +title+ '_metadata', JSON.stringify(metadata));
+       // await indexedDb.createObjectStore([configId +title])
+         if(writing)
+         {
+             console.log("writing pending, ignore");
+         
+         }
+         else{
+         writing=true;
+         
+          
+         await indexedDb.putValue(configId+title, {data: JSON.stringify(objects), metadata: JSON.stringify(metadata)})
+            //increment counter after each put is done
+         
+        
+         writing=false; 
+          console.log("writing done, increment counter");
+         } 
+         //  localStorage.setItem(configId +title+ '_data', JSON.stringify(objects));
+       // localStorage.setItem(configId +title+ '_metadata', JSON.stringify(metadata));
         }catch (e) {
-            localStorage.clear();
+           writing =false;
         }
+        
     }
 
 
@@ -72,16 +94,19 @@ export default function ClientComponent({ url, subject, title, configId }) {
               //restore objects from local storage if it's empty 
     if (objects == null || Object.keys(objects).length === 0) {
         
-        let metadata = localStorage.getItem(configId+title + '_metadata');
-        metadata ? setJson(JSON.parse(metadata)) : true;
+        //let metadata = localStorage.getItem(configId+title + '_metadata');
+        let data = await indexedDb.getValue(configId+title, 1);
+
+       // metadata ? setJson(JSON.parse(metadata)) : true;
        
-        let data = localStorage.getItem(configId + title+'_data');
+        //let data = localStorage.getItem(configId + title+'_data');
         if(data){
             setActionMessage("Processed:");
-            setObjects(JSON.parse(data));
+            
+            setObjects(JSON.parse(data['data']));
         }
 
-        data ? setObjects(JSON.parse(data)) : console.log("empty state");
+        data ? setObjects(JSON.parse(data['data'])) : console.log("empty state");
 
 
 
@@ -102,6 +127,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
             let data = jsonData;
             let tmp_objects = objects;
             try {
+               
                 if (actionMessage != PROCESSING) {
                     setActionMessage(PROCESSING);
                 }
@@ -126,8 +152,17 @@ export default function ClientComponent({ url, subject, title, configId }) {
                 data["timestamp"] = j.frame?.timestamp ?? data["timestamp"];
 
             } finally {
-
-                   saveStateToLocalStorage(tmp_objects, data);
+                counter++;
+                   console.log(counter);
+                   if(counter % 10 ===0)
+                   {
+                        saveStateToLocalStorage(tmp_objects, data);
+                       counter=0;
+                   }
+                  
+                   
+                    //counter=0;
+                   
                 for (const [key, value] of Object.entries(tmp_objects)) {
                     while (tmp_objects[key].length > 10) {
                         tmp_objects[key].pop();

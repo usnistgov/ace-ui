@@ -9,6 +9,7 @@ import { Delete, Save } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { CSVLink } from "react-csv";
 import React, { useEffect, useState } from "react";
+import IndexedDb from '../components/analytics/IndexedDb';
 const propTypes = {
 
     match: PropTypes.any, // eslint-disable-line
@@ -40,9 +41,26 @@ const headers = [
     { label: "data json", key: "data_json"},
     { label: "frame Json", key: "frame_json"}
 ];
-var fileData=[{}];
-  
+var initdata={analytics: "opencv-object-detector",
+analytics_id: "",
+analytics_json: "",
+classification: "",
+confidence: 0.1,
+data_json: "{}",
+frameNum: "",
+frame_json: "",
+id: "",
+sessionId: "",
+stream: "",
+stream_id: "",
+timestamp: 1650419200
+}
+
+ 
+ const indexedDb = new IndexedDb('analyatic');
+ const csvLink = React.createRef<any>()
 class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>, any> {
+
 
 
     constructor(props) {
@@ -54,27 +72,29 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
             loading: false,
             processing: false,
             data: [],
+            csvdata: [initdata],
             alert: [{ score: 3, logic: "<" }, { score: 50, logic: ">" }, { score: 50, logic: ">" }]
         };
+       
     };
 
 
   /**
    * 
    * @param object  the alanytic object
-   * @param generateNew whether to generate an new report.
+   *
    */
-   export(object, generateNew) {
+  async export(object) {
 
-      
-        var key=object['id'] +object["analytics"]+"_data";
-        if(!generateNew && key in fileData){
-            return fileData[key];
-        }
-        var csvdata: any[] = [];
+       
+        var key=object['id'] +object["analytics"];
         
-        var objectstr = localStorage.getItem(key);
-        var objectdata = objectstr ? JSON.parse(objectstr) : null;
+       
+        var thedata: any[] = [initdata];
+        await indexedDb.createObjectStore([key])
+        var objectstr = await indexedDb.getValue(key, 1);
+       // var objectstr = localStorage.getItem(key);
+        var objectdata = objectstr ? JSON.parse(objectstr['data']) : null;
        
 
         if (objectdata) {
@@ -101,7 +121,7 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
                     fd['analytics_json']=JSON.stringify(framedata[k].analytic);
                     fd['data_json']=JSON.stringify(framedata[k].data);
                     fd['frame_json']=JSON.stringify(framedata[k].frame);
-                    csvdata.push(fd);
+                    thedata.push(fd);
                     //console.log(fd);
                     //console.log("--------")
                 }
@@ -109,24 +129,29 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
 
             }
         }
-        fileData[key]=csvdata;
-      
-        return csvdata;
-     
-    
+       
+        this.setState({csvdata: thedata});
 
+        return thedata;
     };
-    exportcsv = (event, done, object) =>{
+
+    exportcsv = async(event, object)  =>{
+        
         if(!this.state.processing){
              this.setState({ processing: true });
         }
-        console.log(event);
-        this.export(object, true);
-        done(true);
+        else{
+       
+        var data=await this.export(object);
+        this.setState({csvdata: data, processing: false});
+              
+        
+        csvLink?.current?.click()
 
+       
+      
 
-
-
+        }
     }
     async configKill(analyticsName, id) {
         const params = {
@@ -137,7 +162,8 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL
         }
-        localStorage.removeItem(id+analyticsName+"_data");
+        await indexedDb.deleteValue(id+analyticsName, 1);
+        //localStorage.removeItem(id+analyticsName+"_data");
         //localStorage.removeItem(id+analyticsName+"_metadata");
         this.setState({ loading: true });
         const response = await fetch(API_URL, {
@@ -267,19 +293,18 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
                                     Delete
                                 </Button>
                                 <p></p>
-                            {object!=null && Object.keys(object).length>0? 
-                                    <Button variant="contained"
+                            {this.state.csvdata && this.state.csvdata.length>0 ? 
+                                    <Button variant="contained"  onClick={(event) =>this.exportcsv(event, object)}
                                     color="primary"
                                     startIcon={<Save />}>
+                                        export
                                   <CSVLink 
-                                  data={this.export(object, false)}
+                                  data={this.state.csvdata}
                                   headers={headers}
                                   filename="detected-objects_reports.csv"
                                   target="_blank"
-                                   asyncOnClick={true}
-                                  onClick={(event, done)=>this.exportcsv(event, done, object)}
                                   >
-                                    Export CSV
+                                <span ref={csvLink}></span>
                                     
                                     </CSVLink>
                                   </Button>
