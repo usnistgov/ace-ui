@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y nodejs netbase
 WORKDIR /ace-ui
 ADD . /ace-ui
 WORKDIR /ace-ui/web-app
+RUN rm .env
 RUN npm install && npm run build
 WORKDIR /ace-ui
 RUN pip3 install -r requirements.txt
