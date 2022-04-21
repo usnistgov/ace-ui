@@ -82,9 +82,9 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
   /**
    * 
    * @param object  the alanytic object
-   * @param generateNew whether to generate an new report.
+   *
    */
-  async export(object, generateNew) {
+  async export(object) {
 
        
         var key=object['id'] +object["analytics"];
@@ -142,7 +142,7 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         }
         else{
        
-        var data=await this.export(object, true);
+        var data=await this.export(object);
         this.setState({csvdata: data, processing: false});
               
         
