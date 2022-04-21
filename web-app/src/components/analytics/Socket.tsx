@@ -55,7 +55,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
          
         
          writing=false; 
-          console.log("writing done, increment counter");
+          
          } 
          //  localStorage.setItem(configId +title+ '_data', JSON.stringify(objects));
        // localStorage.setItem(configId +title+ '_metadata', JSON.stringify(metadata));
@@ -153,7 +153,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
 
             } finally {
                 counter++;
-                   console.log(counter);
+                  
                    if(counter % 10 ===0)
                    {
                         saveStateToLocalStorage(tmp_objects, data);
