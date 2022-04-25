@@ -58,6 +58,20 @@ def parse_tag(s):
     return {pieces[0]: pieces[1]}
 
 
+def analytic_add(remote):
+    """
+    This function adds a remote analytic to the database.
+    :param analytic: Name, IP, Port defined in openapi/ace_api.yaml
+    :return: uuid
+    """
+    analytic_name = remote.get("analytic_name")
+    analytic_host = remote.get("analytic_host")
+    uuid = db.getUUID("{}{}".format(analytic_name, analytic_host.split(":")[0]))
+    data_id = '{}|{}'.format(uuid,analytic_name)
+    db.add_analytics(data_id, analytic_host)
+    return uuid
+    
+
 def analytics_configure_batch(analytics_list):
     """
     This function configures an analytics gets used by openapi handler.
