@@ -87,6 +87,8 @@ services:
       type: video
     volumes:
       - $PWD:/videos
+    ports:
+        - "6420:6420"
     command:
       - "-v"
       - "/videos/{video filename}"      # Put your video file name here
@@ -98,10 +100,13 @@ services:
       type: video
     volumes:
       - $PWD:/videos
+    ports:
+        - "6421:6421"
     command:
       - "-v"
       - "/videos/{video filename}"      # Put your video file name here
-
+      - "-p"
+      -  6421
 volumes:
   grafana-storage:
     external: true

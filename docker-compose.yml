@@ -109,9 +109,13 @@ services:
       type: video
     volumes:
       - $PWD:/videos
+    ports:
+      - "6421:6421"
     command:
       - "-v"
-      - "/videos/{video filename}"      # Put your video file name here
+      - "/videos/{a filename}"      # Put your video file name her
+      - "-p"
+      - "6421"
 
 volumes:
   grafana-storage:
