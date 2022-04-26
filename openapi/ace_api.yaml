@@ -29,6 +29,24 @@ paths:
             schema:
               x-body-name: analytics_list
               $ref: '#/components/schemas/analytics_list'
+  /add_analytic:
+    post:
+      tags:
+        - analytics
+        - configure
+      operationId: run.analytic_add
+      summary: Add an analytic (can be from remote host)
+      responses:
+        '200':
+          description: analytic added
+        '400':
+          description: Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: remote
+              $ref: '#/components/schemas/remote'
   /config:
     post:
       tags:
@@ -267,3 +285,14 @@ components:
           type: string
           format: date-time
           description: time and date of a running analytics
+    remote:
+      type: object
+      properties:
+        analytic_host:
+          type: string
+          description: Address of the analytic to connect to.
+          example: "0.0.0.0:3000"
+        analytic_name:
+          type: string
+          description: Analytics Name
+          example: "object_detector"

@@ -5,7 +5,7 @@ import os
 from functools import reduce
 from http import HTTPStatus
 from sqlite3 import IntegrityError
-
+import logging
 import connexion
 import eventlet
 from ace import aceclient, analytic_pb2
@@ -19,6 +19,7 @@ from ace_db import AceDB, Notifications
 
 # connexion.FlaskApp needs to be defined and initialized before defining handler functions
 port = 5000
+logging.basicConfig(level=logging.DEBUG)
 spec_dir = "openapi/"
 app = connexion.FlaskApp(__name__, port=port, specification_dir=spec_dir)
 
@@ -57,6 +58,25 @@ def parse_tag(s):
         pieces.append("")
     return {pieces[0]: pieces[1]}
 
+
+def analytic_add(remote):
+    """
+    This function adds a remote analytic to the database.
+    :param analytic: Name, IP, Port defined in openapi/ace_api.yaml
+    :return: {'id': uuid}
+    """
+    logging.debug("analytic_add");
+    logging.debug("analytic_add name: {}, host: {}".format(remote.get("analytic_name"), remote.get("analytic_host")))
+    analytic_name = remote.get("analytic_name")
+    analytic_host = remote.get("analytic_host")
+
+    uuid = db.getUUID("{}{}".format(analytic_name, analytic_host.split(":")[0]))
+    data_id = '{}|{}'.format(uuid,analytic_name)
+    payload='{}@{}'.format(analytic_host, analytic_name)
+    logging.debug("analytic_add id: {}, payload: {}".format(analytic_host, analytic_name))
+    db.add_analytics(data_id, payload)
+    return {"id": uuid}, 200
+    
 
 def analytics_configure_batch(analytics_list):
     """
