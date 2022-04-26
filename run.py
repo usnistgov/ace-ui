@@ -109,9 +109,9 @@ def analytics_configure(analytics):
     stream_name = analytics.get("stream_label")
     messenger_addr = analytics.get("messenger_addr")
     db_addr = analytics.get("db_addr")
-    analytic_host = analytics.get("analytic_host").split(":")[0]
+    analytic_host = analytics.get("analytic_host").split(":")[0].split("@")[0]
     analytic_port = "3000"
-
+    logging.debug("start analytic on {}:3000".format(analytic_host))
     if not analytic_host:
         error.append("analytic_host parameter is required")
     if not analytic_port:
