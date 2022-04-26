@@ -83,10 +83,26 @@ const ConfigurePage = ({settings}) => {
         event.preventDefault();
         const data = new FormData(event.target);
         const params = {};
+        var is_remote=false;
         data.forEach(function (value, prop) {
-
+            if(prop==='analytic_host' && String(value).indexOf('@')>=0)
+            {
+                is_remote=true;
+            }
             params[prop] = value
         });
+        //if it's remote, set the message_addr/nat sever to local openvpn client ip
+        //also set local video server to local ip
+        if(is_remote){
+            var local_addr= process.env.LOCAL_SERVER_OVPN_IP ? process.env.LOCAL_SERVER_OVPN_IP : '192.168.255.10'
+            params['messenger_addr']= local_addr+":4222"
+            var streamingSource=params['stream_source']
+            //if streaming source are local, go ahead replace it with openvpn client ip
+            if(streamingSource.indexOf('http://video_file_')>=0){
+                params['stream_source']='http://'+local_addr+":"+streamingSource.split(":")[1];
+            }
+
+        }
         var API_URL = '/api/v1/config';
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL

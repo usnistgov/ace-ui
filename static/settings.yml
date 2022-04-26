@@ -1,5 +1,4 @@
 stream_source:
-  - "Big buck bunny": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
   - "Video File 1": "http://video_file_1:6420/cam.mjpg"
-  - "Video File 2": "http://video_file_2:6420/cam.mjpg"
+  - "Video File 2": "http://video_file_2:6421/cam.mjpg"
 docker_compose_location: "./static/docker-compose.yml"
