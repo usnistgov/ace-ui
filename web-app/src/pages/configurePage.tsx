@@ -99,8 +99,11 @@ const ConfigurePage = ({settings}) => {
             var streamingSource=params['stream_source']
             //if streaming source are local, go ahead replace it with openvpn client ip
             if(streamingSource.indexOf('http://video_file_')>=0){
-                params['stream_source']='http://'+local_addr+":"+streamingSource.split(":")[1];
+                const src=streamingSource.split(":")
+                params['stream_source']='http://'+local_addr+":"+streamingSource.split(":")[2];
+                
             }
+            params['db_addr']=local_addr+":"+params['db_addr'].split(":")[1];
 
         }
         var API_URL = '/api/v1/config';
