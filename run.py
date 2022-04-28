@@ -381,7 +381,7 @@ def consumeNatsMessage(notifications):
     loop = asyncio.new_event_loop()
     consumer = NATSConsumer(addr="nats_server:4222", loop=loop, callback_func=emitMsg,
                             value_deserializer=lambda value: analytic_pb2.ProcessedFrame().FromString(value), )
-    consumer.subscribe("stream.*.analytic.*")
+    consumer.subscribe("stream.*.analytic.>")
     loop.run_forever()
 
 

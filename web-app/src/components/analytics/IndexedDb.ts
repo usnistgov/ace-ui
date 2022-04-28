@@ -71,8 +71,9 @@ class IndexedDb {
 		 catch(error)
 		 {
 			// await this.deleteValue(tableName, 1);
-			console.log(error);
-
+			
+        await this.createObjectStore([tableName])
+        console.log(error+" recreating object store");
 		 }
     }
 
