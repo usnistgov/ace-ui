@@ -73,7 +73,7 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
-    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass, bind_and_activate=True):
+    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass,fps=30, bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
         try:
@@ -84,7 +84,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         except ValueError:
             pass
         self._capture_path = capture_path
-        fps = 30
+        #fps = 30
         self.read_delay = 1. / fps
         self._lock = threading.Lock()
         self._camera = cv2.VideoCapture(capture_path)
@@ -120,6 +120,7 @@ def main():
     parser.add_argument('-a', '--address', default="0.0.0.0")
     parser.add_argument("--loop", default=True, action="store_true",
                         help="Loop video")
+    parser.add_argument("--fps", default=30, type=int)
     args = parser.parse_args()
     print(args)
 
@@ -127,12 +128,14 @@ def main():
     port = args.port
     video = args.video_input
     loop_play = args.loop
+    fps=args.fps
+
 
     # if (len(sys.argv)>1):
     #     video = sys.argv[1]
     print("project credit https://gist.github.com/n3wtron/4624820")
-    print('{} served on http://{}:{}/cam.mjpg'.format(video, address, port))
-    server = ThreadedHTTPServer(video, (address, port), loop_play, CamHandler)
+    print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
+    server = ThreadedHTTPServer(video, (address, port), loop_play, CamHandler,fps )
     server.serve_forever()
 
 
