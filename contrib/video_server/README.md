@@ -1,32 +1,96 @@
 # Video Server 
-Credit: Initial code was copied form: https://gist.github.com/n3wtron/4624820
 
-This project allows users to create a video streaming server. The python program can stream from static video, RTSP stream and web camera. 
+ACE UI (the web controller interface for ACE)  provides a way to use custom sources as video input. You can use this project to stream different types of media for ace-ui or use it by itself for fun. 
+
+We want to give credit to a gist post. Code from this [gist post](https://gist.github.com/n3wtron/4624820), was used as the baseline code for this project. 
+
+This video_server.py script allows users to create a video streaming server. The python program can create a video stream from static video, image file directory, RTSP stream, and web camera. 
 ## Features
-The project allows you to create video server from-
+The project allows you to create an embeaddable and online accessible video server from-
 * Web camera
-* Static local file
-* rtsp or network stream
-* Online video file
+* Static image file
+* RTSP or network stream
+* Online video file using URL
 
 
-## Arguements
+## Parameters & usage
 ```
 optional arguments:
   -h, --help            show this help message and exit
   -v VIDEO_INPUT, --video-input VIDEO_INPUT
-                        Specify a video file path, rtsp stream address or camera value
+                        Specify a video file path, image directory, rtsp stream address or camera value
   -p PORT, --port PORT
   -a ADDRESS, --address ADDRESS
   --loop                Loop video
+  --fps FPS
 
 ```
+
+
+# Sample usage
+You can run this program inside a docker container or as a python script. The usage for docker and python is provided below. 
+
+After running this script, the video server should be available on `http://localhost:6420/cam.mjpg`. If the default port number was changed, 6420 needs to be updated with your new port number.  
+
+## Run using static video file path
+docker run -v `pwd`:/opt/share -p 6420:6420 video_server --video-input /opt/share/sample.mp4 -p 6420
+
+or 
+
+python video_server.py  --video-input sample.mp4 -p 6420
+
+## Run using static image folder
+docker run -v `pwd`:/opt/share -p 6420:6420  video_server --video-input "/opt/share/image_dir/ezgif-frame-%03d.jpg" --port 6420
+
+or 
+
+python video_server.py --video-input "image_dir/ezgif-frame-%03d.jpg --port 6420
+## Run using a stream address
+docker run -v `pwd`:/opt/share -p 6420:6420  video_server --video-input rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4  --port 6420
+
+or 
+
+python video_server.py  --video-input rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4  -p 6420
+
+## Run server that outputs your web camera
+docker run -v `pwd`:/opt/share -p 6420:6420 video_server --video-input 0 --port 6420
+
+or 
+
+python video_server.py  --video-input 0 --port 6420
 
 
 # docker
-To test, run the following command from project directory. 
+To test, run the following command from this directory. 
 ```
-docker build -t foo . && docker run -it -p 6420:6420 foo [YOUR ARGUEMENT]
+docker build -t video_server . && docker run -it -p 6420:6420 video_server [YOUR OPTIONAL ARGUMENTS]
 ```
 Example to change parameters for the docker image: 
-`docker run -it -p 6420:6420 foo -v rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov -p 8000`
+
+
+```
+docker run -it -p 6420:6420 video_server --video-input rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4 -p 6420
+
+docker run -it video_server -v image_dir:/app/image_dir -p 6420:6420 video_server --video-input /app/image_dir/ezgif-frame-%03d.jpg -p 6420
+
+```
+
+# Even more usage
+### Web embedding
+You can embed the incoming stream on an html site. 
+Example:
+
+```
+ <html>
+<head></head>
+<body>
+    <img src="http://0.0.0.0:6420/cam.mjpg"/>
+</body>
+</html>
+```
+
+## Passing video server address on ace-ui
+ACE UI (the web controller interface for ACE) provides a way to use custom sources as video input. You can use this project to stream your files for ACE-UI. 
+1. If you are running video_server as a python script, you will need to expose the port of the video server and pass the public address of the host to the ACE-UI configuration page. The URL needs to be the public address of your machine ie: http://192.168.1.100:6420/cam.mjpg
+
+2. If you are running this server inside a container, and you are going to be accessing the server in a different container inside the same machine, you can use the docker container name as the hostname. For instance, if the container name is video_server_1, you can submit this video url on the configuration page:  http://video_server_1:6420/cam.mjpg

@@ -73,7 +73,7 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
-    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass,fps=30, bind_and_activate=True):
+    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass, fps=30, bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
         try:
@@ -84,8 +84,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         except ValueError:
             pass
         self._capture_path = capture_path
-        #fps = 30
-        self.read_delay = 1. / fps
+        self.fps = fps
+        self.read_delay = 1. / self.fps
         self._lock = threading.Lock()
         self._camera = cv2.VideoCapture(capture_path)
         self.loop_play = loop_play
@@ -114,8 +114,9 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--video-input', default="sample.mp4", help='Specify a video file path, rtsp stream '
+    parser.add_argument('-v', '--video-input', default="sample.mp4", help='Specify a video file path, image directory, rtsp stream '
                                                                           'address or camera value')
+
     parser.add_argument('-p', '--port', default=6420, type=int)
     parser.add_argument('-a', '--address', default="0.0.0.0")
     parser.add_argument("--loop", default=True, action="store_true",
@@ -130,14 +131,12 @@ def main():
     loop_play = args.loop
     fps=args.fps
 
-
     # if (len(sys.argv)>1):
     #     video = sys.argv[1]
     print("project credit https://gist.github.com/n3wtron/4624820")
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
-    server = ThreadedHTTPServer(video, (address, port), loop_play, CamHandler,fps )
+    server = ThreadedHTTPServer(video, (address, port), loop_play, CamHandler, fps)
     server.serve_forever()
-
 
 if __name__ == '__main__':
     main()
