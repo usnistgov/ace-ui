@@ -1,5 +1,8 @@
 # Video Server 
-Credit: Initial code was copied from:  https://gist.github.com/n3wtron/4624820
+
+ACE UI provides a way to use custom source as video input. You can use this project to stream different types of media for ace-ui or just for yourself for fun. 
+
+We want to give credit for the codes for video_server.py to  [gist post](https://gist.github.com/n3wtron/4624820) Post from the gist post lined was used as baseline as code for this project. 
 
 This project allows users to create a video streaming server. The python program can stream from static video, image file directory, RTSP stream, and web camera. 
 ## Features
@@ -70,12 +73,22 @@ docker run -it video_server -v image_dir:/app/image_dir -p 6420:6420 foo --video
 
 ```
 
-# embeading
-You can also embead the incoming stream in a html site. 
+# Even more usage
+### embeading
+You can also embead the incoming stream on a html site. 
 Example:
 
 ```
-<video src="http://0.0.0.0:6420/cam.mjpg" controls>
-   Your browser does not support the <code>video</code> element.
-</video>
+ <html>
+<head></head>
+<body>
+    <img src="http://0.0.0.0:6420/cam.mjpg"/>
+</body>
+</html>
 ```
+
+## Passing video server address on ace-ui
+ACE UI provides a way to use custom source as video input. You can use this project to stream your files for ace-ui. 
+1. If you are running it as a python script, you will need to expose the port of the video server and pass the public address of the host to the ace-ui configuration page. The URL needs to be the public address of your machine ie: http://192.168.1.100:6420/cam.mjpg
+
+2. If you are running this server inside a container, and you are going to be accessing the server in a different container inside the same machine, you can use the docker container name as hostname. For instance, if the container name is video_server_1, you can submit this video url on the configuration page:  http://video_server_1:6420/cam.mjpg
