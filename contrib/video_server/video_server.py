@@ -78,26 +78,33 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         ThreadingMixIn.__init__(self)
         try:
             # verifies whether is a webcam
-            capture_path = int(capture_path)
+            capture_path = int(capture_path[0])
         except TypeError:
             pass
         except ValueError:
             pass
         self._capture_path = capture_path
-        self.fps = fps
-        self.read_delay = 1. / self.fps
+        self._capture_path_idx = 0
+        self.read_delay = 1. / fps
         self._lock = threading.Lock()
-        self._camera = cv2.VideoCapture(capture_path)
+        self._camera = cv2.VideoCapture(capture_path[self._capture_path_idx])
         self.loop_play = loop_play
 
     def open_video(self):
-        if not self._camera.open(self._capture_path):
-            raise IOError('Could not open video {}'.format(self._capture_path))
+        fname=self._capture_path[self._capture_path_idx]
+        if not self._camera.open(fname):
+            raise IOError('Could not open video {}'.format(fname))
 
     def read_frame(self):
         with self._lock:
             retval, img = self._camera.read()
             if not retval:
+                if self.loop_play:
+                    self._capture_path_idx += 1
+                    if self._capture_path_idx >= len(self._capture_path):
+                        self._capture_path_idx = 0
+                fname=self._capture_path[self._capture_path_idx]
+                print("** Opening: {}".format(fname))
                 self.open_video()
                 if self.loop_play:
                     retval, img = self._camera.read()
@@ -114,9 +121,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--video-input', default="sample.mp4", help='Specify a video file path, image directory, rtsp stream '
-                                                                          'address or camera value')
-
+    parser.add_argument('-v', '--video-input', default=[], action='append', 
+        help='Specify a video file path, rtsp stream address or camera value')
     parser.add_argument('-p', '--port', default=6420, type=int)
     parser.add_argument('-a', '--address', default="0.0.0.0")
     parser.add_argument("--loop", default=True, action="store_true",
@@ -127,15 +133,16 @@ def main():
 
     address = args.address
     port = args.port
-    video = args.video_input
+    videos = args.video_input
     loop_play = args.loop
     fps=args.fps
 
-    # if (len(sys.argv)>1):
-    #     video = sys.argv[1]
+    video = ""
+    for x in videos:
+        video=video+x+"  "
     print("project credit https://gist.github.com/n3wtron/4624820")
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
-    server = ThreadedHTTPServer(video, (address, port), loop_play, CamHandler, fps)
+    server = ThreadedHTTPServer(videos, (address, port), loop_play, CamHandler, fps)
     server.serve_forever()
 
 if __name__ == '__main__':
