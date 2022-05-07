@@ -72,7 +72,7 @@ def analytic_add(remote):
 
     uuid = db.getUUID("{}{}".format(analytic_name, analytic_host.split(":")[0]))
     data_id = '{}|{}'.format(uuid,analytic_name)
-    payload='{}@{}'.format(analytic_host, analytic_name)
+    payload='{}@{}'.format(analytic_name, analytic_host)
     logging.debug("analytic_add id: {}, payload: {}".format(analytic_host, analytic_name))
     db.add_analytics(data_id, payload)
     return {"id": uuid}, 200
@@ -109,9 +109,15 @@ def analytics_configure(analytics):
     stream_name = analytics.get("stream_label")
     messenger_addr = analytics.get("messenger_addr")
     db_addr = analytics.get("db_addr")
-    analytic_host = analytics.get("analytic_host").split(":")[0].split("@")[0]
+    host=analytics.get("analytic_host")
+    analytic_host = analytics.get("analytic_host").split(":")[0]
+    if '@' in host:
+        analytic_host=analytic_host.split("@")[1]
+    
     analytic_port = "3000"
-    logging.debug("start analytic on {}:3000".format(analytic_host))
+    if ':' in host:
+        analytic_port=host.split(":")[1]
+    logging.debug("start analytic on {}:{}".format(analytic_host, analytic_port))
     if not analytic_host:
         error.append("analytic_host parameter is required")
     if not analytic_port:
