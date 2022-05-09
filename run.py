@@ -215,9 +215,12 @@ def get_analytics_list():
     analytics = db.get_analytics()
     for value in analytics:
         try:
+            analytic_port="3000"
+            if ':' in value["hostname"]:
+                analytic_port= value["hostname"].split(":")[1]
             data.append({
                 "analytic_host": value["hostname"],
-                "analytic_port": "3000",
+                "analytic_port": analytic_port,
                 "analytic_id": value["id"],
                 "analytic_status": "running",
             })
