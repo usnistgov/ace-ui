@@ -176,7 +176,7 @@ def main():
         videos = videos[1:]
     loop_play = args.loop
     fps=args.fps
-    img_shape = None
+    frame_shape = None
     if args.shape:
         img_shape = tuple(args.shape)
 
@@ -185,7 +185,7 @@ def main():
         video=video+x+"  "
     print("project credit https://gist.github.com/n3wtron/4624820")
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
-    server = ThreadedHTTPServer(videos, (address, port), loop_play, CamHandler, fps, img_shape)
+    server = ThreadedHTTPServer(videos, (address, port), loop_play, CamHandler, fps, frame_shape)
     server.serve_forever()
 
 if __name__ == '__main__':
