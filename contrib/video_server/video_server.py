@@ -158,7 +158,7 @@ def main():
         help='Specify a video file path, rtsp stream address or camera value')
     parser.add_argument('-p', '--port', default=6420, type=int)
     parser.add_argument('-a', '--address', default="0.0.0.0")
-    parser.add_argument('-s', '--shape', default=None, nargs='+', type=int)
+    parser.add_argument('-s', '--shape', default=None, nargs='+', type=int, help="x y shape for rendered video size")
     parser.add_argument("--loop", type=str2bool, nargs='?',
                         const=True, default=True,
                         help="loop video")
