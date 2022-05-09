@@ -15,15 +15,30 @@ The project allows you to create an embeaddable and online accessible video serv
 
 ## Parameters & usage
 ```
+usage: video_server.py [-h] [-v VIDEO_INPUT] [-p PORT] [-a ADDRESS] [-s SHAPE [SHAPE ...]]
+                       [--loop [LOOP]] [-fps IN_FPS] [-out-fps OUT_FPS]
+
+This script can be use to serve a media.
+
 optional arguments:
   -h, --help            show this help message and exit
   -v VIDEO_INPUT, --video-input VIDEO_INPUT
-                        Specify a video file path, image directory, rtsp stream address or camera value
+                        Specify a video file path, rtsp stream address, camera value, or image
+                        directory path. You may add a list of media inputs by passing multiple argumens
+                        of video input parameter. Example python video_server -v video1.mp4 -v
+                        video2.mp4 -v image_dir/ezgif-frame* -v 0 (default: ['sample.mp4'])
   -p PORT, --port PORT
   -a ADDRESS, --address ADDRESS
-  --loop                Loop video
-  --fps FPS
-
+  -s SHAPE [SHAPE ...], --shape SHAPE [SHAPE ...]
+                        output video shape. Should be width and heights int value seperated by space.
+                        Example: -s 800 600 (default: None)
+  --loop [LOOP]         loop video when video ends. (default: True)
+  -fps IN_FPS, --in-fps IN_FPS
+                        input media frames per second (default: 30)
+  -out-fps OUT_FPS, --out-fps OUT_FPS, -t OUT_FPS
+                        frame rate reduction ratio relative to the in_fps. Value must be a factor of
+                        in_fps (default: 30)
+                        
 ```
 
 
