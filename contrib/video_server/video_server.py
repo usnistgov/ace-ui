@@ -112,7 +112,6 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
             pass
         return path
 
-
     def open_video(self):
         fname = self.video_path_handler(self._capture_path[self._capture_path_idx])
 
