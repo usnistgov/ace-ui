@@ -45,6 +45,7 @@ class CamHandler(BaseHTTPRequestHandler):
             while True:
                 try:
                     img = self.server.read_frame()
+                    img = cv2.resize(img, self.server.frame_shape, interpolation=cv2.INTER_LINEAR)
                     retval, jpg = cv2.imencode('.jpg', img)
                     if not retval:
                         raise RuntimeError('Could not encode img to JPEG')
@@ -73,7 +74,14 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
-    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass, fps=30, bind_and_activate=True):
+    def __init__(self, 
+                capture_path, 
+                server_address, 
+                loop_play, 
+                RequestHandlerClass, 
+                fps=30, 
+                frame_shape=(608,608), 
+                bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
         try:
@@ -85,6 +93,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
             pass
         self._capture_path = capture_path
         self.fps = fps
+        self.frame_shape = frame_shape
         self.read_delay = 1. / self.fps
         self._lock = threading.Lock()
         self._camera = cv2.VideoCapture(capture_path)
