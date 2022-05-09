@@ -48,6 +48,8 @@ class CamHandler(BaseHTTPRequestHandler):
                     img = self.server.read_frame()
                     if img is None:
                         raise RuntimeError('No frame to decode, ending stream')
+                    if self.server.frame_shape:
+                        img = cv2.resize(img, self.server.frame_shape, interpolation=cv2.INTER_LINEAR)
                     retval, jpg = cv2.imencode('.jpg', img)
                     if retval is None:
                         raise RuntimeError('Could not encode img to JPEG')
@@ -77,13 +79,22 @@ class CamHandler(BaseHTTPRequestHandler):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
 
-    def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass, fps=30, bind_and_activate=True):
+    def __init__(self, 
+                capture_path, 
+                server_address, 
+                loop_play, 
+                RequestHandlerClass, 
+                fps=30, 
+                frame_shape=None, 
+                bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
 
         self._capture_path_idx = 0
         self._capture_path = capture_path
         self.fps = fps
+        if frame_shape:
+            self.frame_shape = frame_shape
         self.read_delay = 1. / fps
         self._lock = threading.Lock()
 
@@ -101,6 +112,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         except ValueError:
             pass
         return path
+
 
     def open_video(self):
         fname = self.video_path_handler(self._capture_path[self._capture_path_idx])
@@ -148,7 +160,7 @@ def main():
         help='Specify a video file path, rtsp stream address or camera value')
     parser.add_argument('-p', '--port', default=6420, type=int)
     parser.add_argument('-a', '--address', default="0.0.0.0")
-
+    parser.add_argument('-s', '--shape', default=None, nargs='+', type=int)
     parser.add_argument("--loop", type=str2bool, nargs='?',
                         const=True, default=True,
                         help="loop video")
@@ -166,13 +178,16 @@ def main():
         videos = videos[1:]
     loop_play = args.loop
     fps=args.fps
+    img_shape = None
+    if args.shape:
+        img_shape = tuple(args.shape)
 
     video = ""
     for x in videos:
         video=video+x+"  "
     print("project credit https://gist.github.com/n3wtron/4624820")
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
-    server = ThreadedHTTPServer(videos, (address, port), loop_play, CamHandler, fps)
+    server = ThreadedHTTPServer(videos, (address, port), loop_play, CamHandler, fps, img_shape)
     server.serve_forever()
 
 if __name__ == '__main__':
