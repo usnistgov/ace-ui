@@ -178,7 +178,7 @@ def main():
     fps=args.fps
     frame_shape = None
     if args.shape:
-        img_shape = tuple(args.shape)
+        frame_shape = tuple(args.shape)
 
     video = ""
     for x in videos:
