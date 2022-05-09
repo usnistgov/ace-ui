@@ -353,7 +353,8 @@ def consumeNatsMessage(notifications):
         try:
 
             config_id = subject_data[1]
-            analytic = subject_data[3]
+            #handle ip address  as analytics name
+            analytic = ".".join(subject_data[3:])
             cache_matcher = notifications.get_config()
             matcher_objects = cache_matcher.get(config_id)
             """
