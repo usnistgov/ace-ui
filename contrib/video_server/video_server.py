@@ -93,8 +93,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         self._capture_path_idx = 0
         self._capture_path = capture_path
         self.fps = fps
-        if frame_shape:
-            self.frame_shape = frame_shape
+        self.frame_shape = frame_shape
         self.read_delay = 1. / fps
         self._lock = threading.Lock()
 
