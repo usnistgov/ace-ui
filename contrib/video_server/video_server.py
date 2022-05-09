@@ -44,10 +44,14 @@ class CamHandler(BaseHTTPRequestHandler):
             self.end_headers()
             while True:
                 try:
+
                     img = self.server.read_frame()
+                    if img is None:
+                        raise RuntimeError('No frame to decode, ending stream')
                     retval, jpg = cv2.imencode('.jpg', img)
-                    if not retval:
+                    if retval is None:
                         raise RuntimeError('Could not encode img to JPEG')
+
                     jpg_bytes = jpg.tobytes()
                     self.wfile.write("--jpgboundary\r\n".encode())
                     self.send_header('Content-type', 'image/jpeg')
@@ -56,7 +60,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     self.wfile.write(jpg_bytes)
                     time.sleep(self.server.read_delay)
 
-                except (IOError, ConnectionError):
+                except (IOError, ConnectionError, cv2.error):
                     break
         elif self.path.endswith('.html'):
             self.send_response(http.HTTPStatus.OK)
@@ -76,22 +80,31 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     def __init__(self, capture_path, server_address, loop_play, RequestHandlerClass, fps=30, bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
+
+        self._capture_path_idx = 0
+        self._capture_path = capture_path
+        self.fps = fps
+        self.read_delay = 1. / fps
+        self._lock = threading.Lock()
+
+        current_source = self.video_path_handler(self._capture_path[0])
+        self._camera = cv2.VideoCapture(current_source)
+        self.loop_play = loop_play
+
+
+    def video_path_handler(self, path):
         try:
             # verifies whether is a webcam
-            capture_path = int(capture_path[0])
+            return int(path)
         except TypeError:
             pass
         except ValueError:
             pass
-        self._capture_path = capture_path
-        self._capture_path_idx = 0
-        self.read_delay = 1. / fps
-        self._lock = threading.Lock()
-        self._camera = cv2.VideoCapture(capture_path[self._capture_path_idx])
-        self.loop_play = loop_play
+        return path
 
     def open_video(self):
-        fname=self._capture_path[self._capture_path_idx]
+        fname = self.video_path_handler(self._capture_path[self._capture_path_idx])
+
         if not self._camera.open(fname):
             raise IOError('Could not open video {}'.format(fname))
 
@@ -103,7 +116,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
                     self._capture_path_idx += 1
                     if self._capture_path_idx >= len(self._capture_path):
                         self._capture_path_idx = 0
-                fname=self._capture_path[self._capture_path_idx]
+                fname= self.video_path_handler(self._capture_path[self._capture_path_idx])
                 print("** Opening: {}".format(fname))
                 self.open_video()
                 if self.loop_play:
@@ -118,15 +131,28 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         except KeyboardInterrupt:
             self._camera.release()
 
+## Args parser for bool
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--video-input', default=[], action='append', 
+    parser.add_argument('-v', '--video-input', default=["sample.mp4"], action='append',
         help='Specify a video file path, rtsp stream address or camera value')
     parser.add_argument('-p', '--port', default=6420, type=int)
     parser.add_argument('-a', '--address', default="0.0.0.0")
-    parser.add_argument("--loop", default=True, action="store_true",
-                        help="Loop video")
+
+    parser.add_argument("--loop", type=str2bool, nargs='?',
+                        const=True, default=True,
+                        help="loop video")
+
     parser.add_argument("--fps", default=30, type=int)
     args = parser.parse_args()
     print(args)
@@ -134,6 +160,10 @@ def main():
     address = args.address
     port = args.port
     videos = args.video_input
+
+    # We are dropping the default arguments, if there are additional arguments passed as video-input
+    if (len(videos) >1):
+        videos = videos[1:]
     loop_play = args.loop
     fps=args.fps
 
