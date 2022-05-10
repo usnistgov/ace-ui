@@ -153,14 +153,14 @@ def analytics_configure(analytics):
 
     try:
         #if thie hos contains port and ip, go ahead keep the whole hostname in database
-        if '@' in host || if ':' in host:
+        if '@' in host or if ':' in host:
             analytic_host=host
         db.remove_config(analytic_host)
         db.add_config(stream=stream_source, analytics=analytic_host, stream_name=stream_name)
 
     except IntegrityError as e:
         print("value pairs exists on config database for stream and analytics host.")
-
+:q!
     return {"message": message}, 200
 
 
