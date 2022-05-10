@@ -9,7 +9,9 @@ import { Delete, Save } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { CSVLink } from "react-csv";
 import React, { useEffect, useState } from "react";
-import IndexedDb from '../components/analytics/IndexedDb';
+import { get,  del } from 'idb-keyval';
+
+//import IndexedDb from '../components/analytics/IndexedDb';
 const propTypes = {
 
     match: PropTypes.any, // eslint-disable-line
@@ -57,7 +59,7 @@ timestamp: 1650419200
 }
 
  
- const indexedDb = new IndexedDb('analyatic');
+ //const indexedDb = new IndexedDb('analyatic');
  const csvLink = React.createRef<any>()
 class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>, any> {
 
@@ -91,9 +93,9 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         
        
         var thedata: any[] = [initdata];
-        await indexedDb.createObjectStore([key])
-        var objectstr = await indexedDb.getValue(key, 1);
-       // var objectstr = localStorage.getItem(key);
+
+        var objectstr = await get(key);
+
         var objectdata = objectstr ? JSON.parse(objectstr['data']) : null;
        
 
@@ -108,8 +110,6 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
                 }
                 d['classification'] = i;
                 var framedata = objectdata[i];
-               //console.log(framedata);
-               //console.log(framedata.length);
                 for (let k = 0; k < framedata.length; k++) {
                      
                     var fd=d;
@@ -154,17 +154,29 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         }
     }
     async configKill(analyticsName, id) {
-        const params = {
-            "analytic_host": analyticsName
-        };
-
+        
+        var  analytic_host=analyticsName
+        var analytic_port=3000
+        if (analyticsName.includes('@')){
+          analytic_host=  analyticsName.split('@')[1]
+          if(analytic_host.includes(':')){
+             const a=analytic_host.split(':')
+             analytic_host  =  a[0]
+             analytic_port =  a[1]
+          }
+        }
         var API_URL = '/api/v1/kill';
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL
         }
-        await indexedDb.deleteValue(id+analyticsName, 1);
-        //localStorage.removeItem(id+analyticsName+"_data");
-        //localStorage.removeItem(id+analyticsName+"_metadata");
+
+        const params = {
+            "analytic_host": analytic_host,
+            "analytic_port": analytic_port
+        };
+
+         del(id+analyticsName).then(() => console.log('deleted success')).catch((err) => console.log('It failed!', err));
+
         this.setState({ loading: true });
         const response = await fetch(API_URL, {
             method: 'POST',
