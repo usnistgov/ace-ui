@@ -154,14 +154,26 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         }
     }
     async configKill(analyticsName, id) {
-        const params = {
-            "analytic_host": analyticsName
-        };
-
+        
+        var  analytic_host=analyticsName
+        var analytic_port=3000
+        if (analyticsName.includes('@')){
+          analytic_host=  analyticsName.split('@')[1]
+          if(analytic_host.includes(':')){
+             analytic_host  =  analyticsName.split(':')[0]
+             analytic_port =  analyticsName.split(':')[1]
+          }
+        }
         var API_URL = '/api/v1/kill';
         if (process.env.REACT_APP_API_URL) {
             API_URL = process.env.REACT_APP_API_URL + API_URL
         }
+
+        const params = {
+            "analytic_host": analyticsName,
+            "analytic_port": analytic_port
+        };
+
         await indexedDb.deleteValue(id+analyticsName, 1);
         //localStorage.removeItem(id+analyticsName+"_data");
         //localStorage.removeItem(id+analyticsName+"_metadata");
