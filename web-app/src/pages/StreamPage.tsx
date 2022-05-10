@@ -170,7 +170,7 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         }
 
         const params = {
-            "analytic_host": analyticsName,
+            "analytic_host": analytic_host,
             "analytic_port": analytic_port
         };
 
