@@ -47,6 +47,17 @@ class CamHandler(BaseHTTPRequestHandler):
 
             while True:
                 try:
+                    start_time = self.server.start_time
+                    if start_time > 0:
+                        elapsed_time = int(time.time()) - start_time
+                        elapsed_frametime = int(cur_frame * self.server.read_delay)
+                        time_diff = elapsed_time - elapsed_frametime
+                        if time_diff > 1: # if the delay is over 1 second
+                            skip_to = cur_frame + (time_diff * self.server.fps)
+                            while cur_frame < skip_to:
+                                img = self.server.read_frame()
+                                cur_frame = cur_frame + 1
+
                     img = self.server.read_frame()
                     cur_frame = cur_frame + 1
 
@@ -101,6 +112,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
                  fps=30,
                  fps_trim_factor=1,
                  frame_shape=None,
+                 start_time=0,
                  bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
@@ -110,6 +122,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         self.read_delay = 1. / fps
         self.fps_trim_factor = fps_trim_factor
         self.frame_shape = frame_shape
+        self.start_time = start_time
         self._lock = threading.Lock()
 
         current_source = self.video_path_handler(self._capture_path[0])
@@ -173,7 +186,7 @@ def str2bool(v):
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="This script can be use to create video stream server from a range of media including camera, video, image and network stream"
+        description="This script can be use to create video stream server from a range of media including camera, video, image and network stream (only one media type allowed at a time)"
     )
 
     video_input_description = """
@@ -199,6 +212,7 @@ Example python video_server -v video1.mp4 -v video2.mp4 -v image_dir/ezgif-frame
     parser.add_argument("-fps", "--in-fps", default=30, type=int, help="input media frames per second")
     parser.add_argument("-out-fps", "--out-fps", "-t", default=30, type=int,
                         help="frame rate reduction ratio relative to the in_fps. Value must be a factor of in_fps")
+    parser.add_argument('-i', '--instant_playback', default=False, action="store_true", help="When replaying video files, play them without waiting for a consumer to start playback. Warning: Will only work with video files stored on disk.")
     args = parser.parse_args()
     print(' '.join(f'{k}={v} \n' for k, v in vars(args).items()))
 
@@ -232,9 +246,13 @@ Example python video_server -v video1.mp4 -v video2.mp4 -v image_dir/ezgif-frame
 
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
 
+    start_time = 0
+    if args.instant_playback is True:
+        start_time = int(time.time())
+
     server = ThreadedHTTPServer(capture_path=videos, server_address=(address, port), loop_play=loop_play,
                                 RequestHandlerClass=CamHandler, fps=fps, fps_trim_factor=trim_factor,
-                                frame_shape=frame_shape)
+                                frame_shape=frame_shape, start_time=start_time)
     server.serve_forever()
 
 
