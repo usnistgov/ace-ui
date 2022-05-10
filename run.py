@@ -152,6 +152,9 @@ def analytics_configure(analytics):
     message.append("added  {} on {} ".format(stream_source, client.addr))
 
     try:
+        #if thie hos contains port and ip, go ahead keep the whole hostname in database
+        if '@' in host || if ':' in host:
+            analytic_host=host
         db.remove_config(analytic_host)
         db.add_config(stream=stream_source, analytics=analytic_host, stream_name=stream_name)
 
