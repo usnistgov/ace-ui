@@ -31,7 +31,7 @@
   },
   "scripts": {
     "start": "REACT_APP_API_URL=http://localhost:5000 react-scripts start",
-    "dev-start": "REACT_APP_API_URL=http://10.118.0.1:5000 react-scripts start debug",
+    "dev-start": "REACT_APP_API_URL=http://192.168.255.10:5000 react-scripts start debug",
     "v": "node -v",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
