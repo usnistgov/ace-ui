@@ -4,7 +4,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Box, FormControl, FormLabel, Radio, RadioGroup } from '@material-ui/core';
 import ClientFrame from "./SocketFrame";
 import ImageFrameCard from "./ImageFrameCard";
-import IndexedDb from './IndexedDb';
+//import IndexedDb from './IndexedDb';
+import { get, set } from 'idb-keyval';
 
 //import MjpegPlayerComponent from './MjpegPlayer';
 
@@ -17,7 +18,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
     if (process.env.REACT_APP_API_URL) {
         ENDPOINT = process.env.REACT_APP_API_URL
     }
-    const indexedDb = new IndexedDb('analyatic');
+    //const indexedDb = new IndexedDb('analyatic');
     var counter=0;
     var writing=false;
     const [jsonData, setJson] = useState({ "frame": undefined, "objects": [], "timestamp": undefined, "unique": [] });
@@ -50,7 +51,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
          writing=true;
          
           
-         await indexedDb.putValue(configId+title, {data: JSON.stringify(objects), metadata: JSON.stringify(metadata)})
+         await set(configId+title, {data: JSON.stringify(objects), metadata: JSON.stringify(metadata)})
             //increment counter after each put is done
          
         
@@ -95,7 +96,7 @@ export default function ClientComponent({ url, subject, title, configId }) {
     if (objects == null || Object.keys(objects).length === 0) {
         
         //let metadata = localStorage.getItem(configId+title + '_metadata');
-        let data = await indexedDb.getValue(configId+title, 1);
+        let data = await get(configId+title);
 
        // metadata ? setJson(JSON.parse(metadata)) : true;
        
