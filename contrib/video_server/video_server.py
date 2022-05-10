@@ -44,12 +44,17 @@ class CamHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
             cur_frame = 0
+            # A new GET resets start_time
+            if self.server.start_time > 0:
+                self.server.start_time = int(time.time())
 
             while True:
                 try:
-                    start_time = self.server.start_time
-                    if start_time > 0:
-                        elapsed_time = int(time.time()) - start_time
+                    cur_time = int(time.time())
+                    # Compensate for consumer join/leave
+                    lastpb_time = self.server.lastpb_time
+                    if lastpb_time > 0:
+                        elapsed_time = cur_time - lastpb_time
                         elapsed_frametime = int(cur_frame * self.server.read_delay)
                         time_diff = elapsed_time - elapsed_frametime
                         if time_diff > 1: # if the delay is over 1 second
@@ -57,7 +62,21 @@ class CamHandler(BaseHTTPRequestHandler):
                             while cur_frame < skip_to:
                                 img = self.server.read_frame()
                                 cur_frame = cur_frame + 1
-                            print("Resync-ed by jumping forward {} seconds".format(time_diff))
+                            print("Resync-ed consumer by jumping forward {} seconds (frame: {})".format(time_diff, cur_frame))
+                        self.server.lastpb_time = cur_time
+
+                    # Compensate for playback slowness
+                    start_time = self.server.start_time
+                    if start_time > 0:
+                        elapsed_time = cur_time - start_time
+                        elapsed_frametime = int(cur_frame * self.server.read_delay)
+                        time_diff = elapsed_time - elapsed_frametime
+                        if time_diff > 1: # if the delay is over 1 second
+                            skip_to = cur_frame + (time_diff * self.server.fps)
+                            while cur_frame < skip_to:
+                                img = self.server.read_frame()
+                                cur_frame = cur_frame + 1
+                            print("Resync-ed playback by jumping forward {} seconds (frame: {})".format(time_diff, cur_frame))
 
                     img = self.server.read_frame()
                     cur_frame = cur_frame + 1
@@ -113,7 +132,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
                  fps=30,
                  fps_trim_factor=1,
                  frame_shape=None,
-                 start_time=0,
+                 lastpb_time=0,
                  bind_and_activate=True):
         HTTPServer.__init__(self, server_address, RequestHandlerClass, bind_and_activate)
         ThreadingMixIn.__init__(self)
@@ -124,7 +143,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
         self.read_delay = 1. / fps
         self.fps_trim_factor = fps_trim_factor
         self.frame_shape = frame_shape
-        self.start_time = start_time
+        self.start_time = lastpb_time
+        self.lastpb_time = lastpb_time
         self._lock = threading.Lock()
 
         current_source = self.video_path_handler(self._capture_path[0])
@@ -248,13 +268,13 @@ Example python video_server -v video1.mp4 -v video2.mp4 -v image_dir/ezgif-frame
 
     print('{} served on http://{}:{}/cam.mjpg with {} fps'.format(video, address, port, fps))
 
-    start_time = 0
+    lastpb_time = 0
     if args.instant_playback is True:
-        start_time = int(time.time())
+        lastpb_time = int(time.time())
 
     server = ThreadedHTTPServer(capture_path=videos, server_address=(address, port), loop_play=loop_play,
                                 RequestHandlerClass=CamHandler, fps=fps, fps_trim_factor=trim_factor,
-                                frame_shape=frame_shape, start_time=start_time)
+                                frame_shape=frame_shape, lastpb_time=lastpb_time)
     server.serve_forever()
 
 
