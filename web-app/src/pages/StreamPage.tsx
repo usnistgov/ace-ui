@@ -160,8 +160,9 @@ class StreamPage extends React.Component<PropTypes.InferProps<typeof propTypes>,
         if (analyticsName.includes('@')){
           analytic_host=  analyticsName.split('@')[1]
           if(analytic_host.includes(':')){
-             analytic_host  =  analyticsName.split(':')[0]
-             analytic_port =  analyticsName.split(':')[1]
+             const a=analytic_host.split(':')
+             analytic_host  =  a[0]
+             analytic_port =  a[1]
           }
         }
         var API_URL = '/api/v1/kill';
