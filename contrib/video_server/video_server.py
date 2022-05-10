@@ -57,6 +57,7 @@ class CamHandler(BaseHTTPRequestHandler):
                             while cur_frame < skip_to:
                                 img = self.server.read_frame()
                                 cur_frame = cur_frame + 1
+                            print("Resync-ed by jumping forward {} seconds".format(time_diff))
 
                     img = self.server.read_frame()
                     cur_frame = cur_frame + 1
@@ -119,6 +120,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 
         self._capture_path_idx = 0
         self._capture_path = capture_path
+        self.fps = fps
         self.read_delay = 1. / fps
         self.fps_trim_factor = fps_trim_factor
         self.frame_shape = frame_shape
