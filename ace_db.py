@@ -135,13 +135,7 @@ class AceDB:
             self.con.commit()
 
     def add_config(self, stream, analytics, stream_name=None):
-        analytic_host=analytics
-        if '@' in analytics:
-            analytic_host=analytics.split("@")[1]
-        if ':' in host:
-            analytic_host=host.split(":")[0]
-        #generate id base on stream and hostname to ensure NATs notificaiton work
-        data_id = self.getUUID("{}{}".format(stream, analytic_host))
+        data_id = self.getUUID("{}{}".format(stream, analytics))
         stream_id = self.getUUID(stream)
         analytics_id = self.getUUID(analytics)
 
