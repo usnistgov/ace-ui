@@ -72,7 +72,7 @@ def analytic_add(remote):
 
     uuid = db.getUUID("{}{}".format(analytic_name, analytic_host.split(":")[0]))
     data_id = '{}|{}'.format(uuid,analytic_name)
-    payload='{}@{}'.format(analytic_name, analytic_host)
+    payload='{}@{}'.format(analytic_host, analytic_name)
     logging.debug("analytic_add id: {}, payload: {}".format(analytic_host, analytic_name))
     db.add_analytics(data_id, payload)
     return {"id": uuid}, 200
@@ -109,15 +109,9 @@ def analytics_configure(analytics):
     stream_name = analytics.get("stream_label")
     messenger_addr = analytics.get("messenger_addr")
     db_addr = analytics.get("db_addr")
-    host=analytics.get("analytic_host")
-    analytic_host = analytics.get("analytic_host").split(":")[0]
-    if '@' in host:
-        analytic_host=analytic_host.split("@")[1]
-    
+    analytic_host = analytics.get("analytic_host").split(":")[0].split("@")[0]
     analytic_port = "3000"
-    if ':' in host:
-        analytic_port=host.split(":")[1]
-    logging.debug("start analytic on {}:{}".format(analytic_host, analytic_port))
+    logging.debug("start analytic on {}:3000".format(analytic_host))
     if not analytic_host:
         error.append("analytic_host parameter is required")
     if not analytic_port:
@@ -152,9 +146,6 @@ def analytics_configure(analytics):
     message.append("added  {} on {} ".format(stream_source, client.addr))
 
     try:
-        #if thie hos contains port and ip, go ahead keep the whole hostname in database
-        if '@' in host or  ':' in host:
-            analytic_host=host
         db.remove_config(analytic_host)
         db.add_config(stream=stream_source, analytics=analytic_host, stream_name=stream_name)
 
@@ -218,12 +209,9 @@ def get_analytics_list():
     analytics = db.get_analytics()
     for value in analytics:
         try:
-            analytic_port="3000"
-            if ':' in value["hostname"]:
-                analytic_port= value["hostname"].split(":")[1]
             data.append({
                 "analytic_host": value["hostname"],
-                "analytic_port": analytic_port,
+                "analytic_port": "3000",
                 "analytic_id": value["id"],
                 "analytic_status": "running",
             })
@@ -356,8 +344,7 @@ def consumeNatsMessage(notifications):
         try:
 
             config_id = subject_data[1]
-            #handle ip address  as analytics name
-            analytic = ".".join(subject_data[3:])
+            analytic = subject_data[3]
             cache_matcher = notifications.get_config()
             matcher_objects = cache_matcher.get(config_id)
             """
