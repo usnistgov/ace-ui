@@ -9,6 +9,7 @@ COPY . .
 #delete homepage in package.json, so ui will work using node serve
 RUN sed -i '/homepage/d' package.json
 RUN npm install
+RUN npm install serve -g
 RUN npm run build
 EXPOSE 3549
 CMD [ "serve", "-s","build", "-p", "3549"]
