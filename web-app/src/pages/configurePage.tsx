@@ -94,7 +94,7 @@ const ConfigurePage = ({settings}) => {
         //if it's remote, set the message_addr/nat sever to local openvpn client ip
         //also set local video server to local ip
         if(is_remote){
-            var local_addr= process.env.LOCAL_SERVER_OVPN_IP ? process.env.LOCAL_SERVER_OVPN_IP : '192.168.255.10'
+            var local_addr= process.env.REACT_APP_LOCAL_IP ? process.env.REACT_APP_LOCAL_IP : '192.168.255.10'
             params['messenger_addr']= local_addr+":4222"
             var streamingSource=params['stream_source']
             //if streaming source are local, go ahead replace it with openvpn client ip
