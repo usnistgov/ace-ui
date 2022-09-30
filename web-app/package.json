@@ -25,7 +25,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-time-ago": "^6.2.2",
-    "recharts": "^1.3.4",
+    "recharts": "^2.1.14",
     "socket.io-client": "^3.1.0",
     "typescript": "^4.2.4"
   },
